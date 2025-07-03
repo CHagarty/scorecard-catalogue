@@ -1,0 +1,468 @@
+---------------------------------------------------------------------------------------------
+SCHEMAS
+---------------------------------------------------------------------------------------------
+
+CREATE TABLE courses_18 (
+    course_id INTEGER PRIMARY KEY NOT NULL,
+    name TEXT NOT NULL,
+    front INTEGER NOT NULL,
+    back INTEGER NOT NULL,
+    total INTEGER NOT NULL,
+    front_yards INTEGER,
+    back_yards, INTEGER,
+    total_yards, INTEGER,
+    course_holes, INTEGER,
+
+
+    yards_1 INTEGER,
+    handicap_1 INTEGER,
+    par_1 INTEGER,
+
+    yards_2 INTEGER,
+    handicap_2 INTEGER,
+    par_2 INTEGER,
+
+    yards_3 INTEGER,
+    handicap_3 INTEGER,
+    par_3 INTEGER,
+
+    yards_4 INTEGER,
+    handicap_4 INTEGER,
+    par_4 INTEGER,
+
+    yards_5 INTEGER,
+    handicap_5 INTEGER,
+    par_5 INTEGER,
+
+    yards_6 INTEGER,
+    handicap_6 INTEGER,
+    par_6 INTEGER,
+
+    yards_7 INTEGER,
+    handicap_7 INTEGER,
+    par_7 INTEGER,
+
+    yards_8 INTEGER,
+    handicap_8 INTEGER,
+    par_8 INTEGER,
+
+    yards_9 INTEGER,
+    handicap_9 INTEGER,
+    par_9 INTEGER,
+
+    yards_10 INTEGER,
+    handicap_10 INTEGER,
+    par_10 INTEGER,
+
+    yards_11 INTEGER,
+    handicap_11 INTEGER,
+    par_11 INTEGER,
+
+    yards_12 INTEGER,
+    handicap_12 INTEGER,
+    par_12 INTEGER,
+
+    yards_13 INTEGER,
+    handicap_13 INTEGER,
+    par_13 INTEGER,
+
+    yards_14 INTEGER,
+    handicap_14 INTEGER,
+    par_14 INTEGER,
+
+    yards_15 INTEGER,
+    handicap_15 INTEGER,
+    par_15 INTEGER,
+
+    yards_16 INTEGER,
+    handicap_16 INTEGER,
+    par_16 INTEGER,
+
+    yards_17 INTEGER,
+    handicap_17 INTEGER,
+    par_17 INTEGER,
+
+    yards_18 INTEGER,
+    handicap_18 INTEGER,
+    par_18 INTEGER,
+
+    user_id INTEGER NOT NULL,
+
+    FOREIGN KEY(user_id) REFERENCES users(id)
+);
+
+-------------------------------------------------------------------------------
+
+CREATE TABLE courses_9 (
+    course_id INTEGER PRIMARY KEY NOT NULL,
+    name TEXT,
+    total INTEGER,
+    total_yards INTEGER,
+    course_holes INTEGER,
+
+
+    yards_1 INTEGER,
+    handicap_1 INTEGER,
+    par_1 INTEGER,
+
+    yards_2 INTEGER,
+    handicap_2 INTEGER,
+    par_2 INTEGER,
+
+    yards_3 INTEGER,
+    handicap_3 INTEGER ,
+    par_3 INTEGER,
+
+    yards_4 INTEGER,
+    handicap_4 INTEGER,
+    par_4 INTEGER,
+
+    yards_5 INTEGER,
+    handicap_5 INTEGER,
+    par_5 INTEGER,
+
+    yards_6 INTEGER,
+    handicap_6 INTEGER,
+    par_6 INTEGER,
+
+    yards_7 INTEGER,
+    handicap_7 INTEGER,
+    par_7 INTEGER,
+
+    yards_8 INTEGER,
+    handicap_8 INTEGER,
+    par_8 INTEGER,
+
+    yards_9 INTEGER,
+    handicap_9 INTEGER,
+    par_9 INTEGER,
+
+    user_id INTEGER NOT NULL,
+
+    FOREIGN KEY(user_id) REFERENCES users(id)
+);
+
+------------------------------------------------------------------------------------
+
+CREATE TABLE rounds (
+    round_id INTEGER PRIMARY KEY,
+    date DATE,
+    holes INTEGER,
+    player_id_1 INTEGER,
+    player_id_2 INTEGER,
+    player_id_3 INTEGER,
+    course_18_id INTEGER,
+    course_9_id INTEGER,
+    user_id INTEGER,
+    FOREIGN KEY(player_id_1) REFERENCES players(player_id),
+    FOREIGN KEY(player_id_2) REFERENCES players(player_id),
+    FOREIGN KEY(player_id_3) REFERENCES players(player_id),
+    FOREIGN KEY(course_18_id) REFERENCES courses_18(course_id),
+    FOREIGN KEY(course_9_id) REFERENCES courses_9(course_id),
+    FOREIGN KEY(user_id) REFERENCES users(id)
+)
+
+-------------------------------------------------------------------------------------
+
+CREATE TABLE players (
+    player_id INTEGER PRIMARY KEY,
+    first_name TEXT,
+    last_name TEXT,
+    user_id INTEGER,
+    rounds_played INTEGER,
+    handicap INTEGER,
+    average_score INTEGER,
+    average_18 INTEGER,
+    average_9 INTEGER,
+    birdies INTEGER,
+    pars INTEGER,
+    bogeys INTEGER,
+    double_bogeys INTEGER,
+    triple_bogeys INTEGER,
+    holes_in_one INTEGER,
+    FOREIGN KEY(user_id) REFERENCES users(id)
+)
+
+-----------------------------------------------------------------------------
+
+CREATE TABLE score_18 (
+    score_id INTEGER PRIMARY KEY,
+    hole_1 INTEGER,
+    hole_2 INTEGER,
+    hole_3 INTEGER,
+    hole_4 INTEGER,
+    hole_5 INTEGER,
+    hole_6 INTEGER,
+    hole_7 INTEGER,
+    hole_8 INTEGER,
+    hole_9 INTEGER,
+    hole_10 INTEGER,
+    hole_11 INTEGER,
+    hole_12 INTEGER,
+    hole_13 INTEGER,
+    hole_14 INTEGER,
+    hole_15 INTEGER,
+    hole_16 INTEGER,
+    hole_17 INTEGER,
+    hole_18 INTEGER,
+    front INTEGER,
+    back INTEGER,
+    total INTEGER,
+    is_user BOOLEAN,
+    round_id INTEGER,
+    player_id INTEGER,
+    user_id INTEGER,
+    FOREIGN KEY(round_id) REFERENCES rounds(round_id),
+    FOREIGN KEY(player_id) REFERENCES players(player_id),
+    FOREIGN KEY(user_id) REFERENCES users(id)
+)
+
+-----------------------------------------------------------------------
+
+CREATE TABLE score_9 (
+    score_id INTEGER PRIMARY KEY,
+    hole_1 INTEGER,
+    hole_2 INTEGER,
+    hole_3 INTEGER,
+    hole_4 INTEGER,
+    hole_5 INTEGER,
+    hole_6 INTEGER,
+    hole_7 INTEGER,
+    hole_8 INTEGER,
+    hole_9 INTEGER,
+    total INTEGER,
+    is_user BOOLEAN,
+    round_id INTEGER,
+    player_id INTEGER,
+    user_id INTEGER,
+    FOREIGN KEY(round_id) REFERENCES rounds(round_id),
+    FOREIGN KEY(player_id) REFERENCES players(player_id),
+    FOREIGN KEY(user_id) REFERENCES users(id)
+)
+
+
+---------------------------------------------------------------------------------------------------------------------------------------
+SCHEMA COPIED FROM PHPLITEADMIN
+---------------------------------------------------------------------------------------------------------------------------------------
+
+CREATE TABLE courses_18 (
+course_id INTEGER PRIMARY KEY NOT NULL,
+name TEXT NOT NULL,
+front INTEGER NOT NULL,
+back INTEGER NOT NULL,
+total INTEGER NOT NULL,
+
+
+yards_1 INTEGER,
+handicap_1 INTEGER,
+par_1 INTEGER,
+
+yards_2 INTEGER,
+handicap_2 INTEGER,
+par_2 INTEGER,
+
+yards_3 INTEGER,
+handicap_3 INTEGER,
+par_3 INTEGER,
+
+yards_4 INTEGER,
+handicap_4 INTEGER,
+par_4 INTEGER,
+
+yards_5 INTEGER,
+handicap_5 INTEGER,
+par_5 INTEGER,
+
+yards_6 INTEGER,
+handicap_6 INTEGER,
+par_6 INTEGER,
+
+yards_7 INTEGER,
+handicap_7 INTEGER,
+par_7 INTEGER,
+
+yards_8 INTEGER,
+handicap_8 INTEGER,
+par_8 INTEGER,
+
+yards_9 INTEGER,
+handicap_9 INTEGER,
+par_9 INTEGER,
+
+yards_10 INTEGER,
+handicap_10 INTEGER,
+par_10 INTEGER,
+
+yards_11 INTEGER,
+handicap_11 INTEGER,
+par_11 INTEGER,
+
+yards_12 INTEGER,
+handicap_12 INTEGER,
+par_12 INTEGER,
+
+yards_13 INTEGER,
+handicap_13 INTEGER,
+par_13 INTEGER,
+
+yards_14 INTEGER,
+handicap_14 INTEGER,
+par_14 INTEGER,
+
+yards_15 INTEGER,
+handicap_15 INTEGER,
+par_15 INTEGER,
+
+yards_16 INTEGER,
+handicap_16 INTEGER,
+par_16 INTEGER,
+
+yards_17 INTEGER,
+handicap_17 INTEGER,
+par_17 INTEGER,
+
+yards_18 INTEGER,
+handicap_18 INTEGER,
+par_18 INTEGER,
+
+user_id INTEGER NOT NULL, 'front_yards' INTEGER, 'back_yards' INTEGER, 'total_yards' INTEGER, 'course_holes' INTEGER,
+
+FOREIGN KEY(user_id) REFERENCES users(id)
+);
+
+--------------------------------------------------------------------------
+
+CREATE TABLE courses_9 (
+course_id INTEGER PRIMARY KEY NOT NULL,
+name TEXT,
+total INTEGER,
+
+
+yards_1 INTEGER,
+handicap_1 INTEGER,
+par_1 INTEGER,
+
+yards_2 INTEGER,
+handicap_2 INTEGER,
+par_2 INTEGER,
+
+yards_3 INTEGER,
+handicap_3 INTEGER ,
+par_3 INTEGER,
+
+yards_4 INTEGER,
+handicap_4 INTEGER,
+par_4 INTEGER,
+
+yards_5 INTEGER,
+handicap_5 INTEGER,
+par_5 INTEGER,
+
+yards_6 INTEGER,
+handicap_6 INTEGER,
+par_6 INTEGER,
+
+yards_7 INTEGER,
+handicap_7 INTEGER,
+par_7 INTEGER,
+
+yards_8 INTEGER,
+handicap_8 INTEGER,
+par_8 INTEGER,
+
+yards_9 INTEGER,
+handicap_9 INTEGER,
+par_9 INTEGER,
+
+user_id INTEGER NOT NULL, 'course_holes' INTEGER,
+
+FOREIGN KEY(user_id) REFERENCES users(id)
+);
+
+-------------------------------------------------------------
+
+CREATE TABLE players (
+player_id INTEGER PRIMARY KEY,
+first_name TEXT,
+last_name TEXT,
+user_id INTEGER, 'rounds_played' INTEGER, 'handicap' INTEGER, 'average_score' INTEGER, 'birdies' INTEGER, 'pars' INTEGER, 'bogeys' INTEGER, 'eagles' INTEGER, 'double_bogeys' INTEGER, 'triple_bogeys' INTEGER, 'holes_in_one' INTEGER,
+FOREIGN KEY(user_id) REFERENCES users(id)
+);
+
+-----------------------------------------------------------------------------------
+
+CREATE TABLE rounds (
+round_id INTEGER PRIMARY KEY,
+date DATE,
+player_id_1 INTEGER,
+player_id_2 INTEGER,
+player_id_3 INTEGER,
+course_18_id INTEGER,
+course_9_id INTEGER,
+user_id INTEGER, 'holes' INTEGER,
+FOREIGN KEY(player_id_1) REFERENCES players(player_id),
+FOREIGN KEY(player_id_2) REFERENCES players(player_id),
+FOREIGN KEY(player_id_3) REFERENCES players(player_id),
+FOREIGN KEY(course_18_id) REFERENCES courses_18(course_id),
+FOREIGN KEY(course_9_id) REFERENCES courses_9(course_id),
+FOREIGN KEY(user_id) REFERENCES users(id)
+);
+
+---------------------------------------------------------------------------------
+
+CREATE TABLE score_18 (
+score_id INTEGER PRIMARY KEY,
+hole_1 INTEGER,
+hole_2 INTEGER,
+hole_3 INTEGER,
+hole_4 INTEGER,
+hole_5 INTEGER,
+hole_6 INTEGER,
+hole_7 INTEGER,
+hole_8 INTEGER,
+hole_9 INTEGER,
+hole_10 INTEGER,
+hole_11 INTEGER,
+hole_12 INTEGER,
+hole_13 INTEGER,
+hole_14 INTEGER,
+hole_15 INTEGER,
+hole_16 INTEGER,
+hole_17 INTEGER,
+hole_18 INTEGER,
+front INTEGER,
+back INTEGER,
+total INTEGER,
+round_id INTEGER,
+player_id INTEGER,
+user_id INTEGER, 'is_user' BOOLEAN,
+FOREIGN KEY(round_id) REFERENCES rounds(round_id),
+FOREIGN KEY(player_id) REFERENCES players(player_id),
+FOREIGN KEY(user_id) REFERENCES users(id)
+);
+
+----------------------------------------------------------------------------
+
+CREATE TABLE score_9 (
+score_id INTEGER PRIMARY KEY,
+hole_1 INTEGER,
+hole_2 INTEGER,
+hole_3 INTEGER,
+hole_4 INTEGER,
+hole_5 INTEGER,
+hole_6 INTEGER,
+hole_7 INTEGER,
+hole_8 INTEGER,
+hole_9 INTEGER,
+total INTEGER,
+round_id INTEGER,
+player_id INTEGER,
+user_id INTEGER, 'is_user' BOOLEAN,
+FOREIGN KEY(round_id) REFERENCES rounds(round_id),
+FOREIGN KEY(player_id) REFERENCES players(player_id),
+FOREIGN KEY(user_id) REFERENCES users(id)
+);
+
+-------------------------------------------------------------------------------------------
+
+CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, username TEXT NOT NULL, hash TEXT NOT NULL, 'nickname' TEXT);

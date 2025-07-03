@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    New Players
+{% endblock %}
+
+{% block main %}
+    <form action="/number_players" method="post">
+        <div class="mb-3">
+            <h2 class="num_players_h2">Select the number of players you would like to add</h2>
+            <select name="players" class="form-select num_players_select" aria-label="Default select" required>
+                <!-- Select number of new players to add -->
+                <option selected value="">Number of players</option>
+                <option value="1">One</option>
+                <option value="2">Two</option>
+                <option value="3">Three</option>
+                <option value="4">Four</option>
+                <option value="5">Five</option>
+                <option value="6">Six</option>
+            </select>
+            <button class="btn btn-primary" type="submit">Add Players</button>
+        </div>
+    </form>
+{% endblock %}

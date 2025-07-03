@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    New Round
+{% endblock %}
+
+{% block main %}
+    <h1 class="new-round-h1">Round Details</h1>
+
+    <form action="/new_round" method="post">
+        <div class="mb-3">
+            <h2 class="new-round-h2 round-bottom"> Number of players</h2>
+            <p>Note: you are always the first player on the score card. If you are playing with others you can add them now.</p>
+        <!-- Select number of players -->
+            <select name="players" required class="form-select round-select" aria-label="Default select">
+                <option selected value="">Players</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <h2 class="new-round-h2">Number of holes</h2>
+        <!-- Select number of holes -->
+            <select name="holes" required class="form-select round-select" aria-label="Default select">
+                <option selected value="">Holes</option>
+                <option value="18">18</option>
+                <option value="9">9</option>
+            </select>
+        </div>
+        <button class="btn btn-primary" type="submit">New Round</button>
+
+    </form>
+
+
+{% endblock %}

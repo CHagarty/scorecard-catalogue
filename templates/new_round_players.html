@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    New Round Players
+{% endblock %}
+
+{% block main %}
+    <h1 class="new-round-h1">Select Players</h1>
+
+    <form action="/new_round_players" method="post">
+        <div class="mb-3">
+        <!-- Pass players and holes as hidden inputs-->
+            <input type="hidden" name="players" value="{{players}}">
+            <input type="hidden" name="holes" value="{{holes}}">
+
+        <!-- Select players for the new round via a dropdown select input-->
+            {% for player in range(players - 1) %}
+                <h2>Player {{player + 2}}</h2>
+                <select id="players-select" name="player_ids_{{player}}" required class="form-select form-control round-select" aria-label="Default select">
+                    <option selected value="">Player</option>
+                    {% for name in player_names %}
+
+                        <option value="{{name.player_id}}">{{name.first_name}} {{name.last_name}}</option>
+
+                    {% endfor %}
+                </select>
+            {% endfor %}
+        </div>
+        <button class="btn btn-primary" type="submit">Add Round</button>
+    </form>
+
+
+
+
+{% endblock %}

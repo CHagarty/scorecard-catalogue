@@ -1,0 +1,663 @@
+/*  Universal styles */
+
+* {
+    font-family: "Lexend", "Almarai", "Quicksand", sans-serif;
+}
+
+.btn {
+    background-color: #0f3e0f;
+    border: solid 1px #0f3e0f;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    height: 16rem;
+}
+
+h1 {
+    margin-bottom: 2rem;
+}
+
+/* Navbar */
+
+.navbar {
+    background-color: #0f3e0f;
+
+}
+
+.nav-link {
+    color: white;
+}
+
+
+/* Register page */
+
+.register-h1 {
+    margin-bottom: 2rem;
+    font-weight: 400;
+}
+
+
+/* Scorecard Tables */
+
+table {
+    margin: 0 auto;
+
+}
+
+.table-container {
+    margin-bottom: 2rem;
+}
+
+
+
+th {
+    background-color: #0f3e0f;
+    color: white;
+    padding: 0.4rem 0 0.4rem 0;
+}
+
+td {
+    padding: 0.4rem;
+}
+
+.t-header {
+    background-color: #0f3e0f;
+    color: white;
+}
+
+.hole {
+    background-color: black;
+    color: white;
+}
+
+.out {
+    background-color: #0000e6;
+    color: white;
+}
+
+.in {
+    background-color: #e60000;
+    color: white;
+}
+
+.handicap {
+    background-color: #b3b3b3;
+    color: white;
+}
+
+.yards {
+    background-color: #c7be06;
+    color: white;
+}
+
+.par {
+    background-color: #0f3e0f;
+    color: white;
+}
+
+.out-score {
+    background-color: #3b55ff;
+}
+
+.in-score {
+    background-color: #fc3e30;
+}
+
+.total-score {
+    background-color: #6abf65;
+}
+
+/* Player Table Layout */
+
+.player-table {
+    margin: 1rem auto 3rem auto;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    padding: 1rem;
+    box-shadow: 1px 2px 5px #0f3e0f;
+    width: 100%;
+    font-size: 0.95rem;
+    border-collapse: collapse;
+}
+
+.player-table thead th {
+    text-align: center;
+    font-weight: bold;
+    padding: 0.5rem;
+    border-bottom: 1px solid #ccc;
+    border-radius: 8px 8px 0 0;
+}
+
+.player-table td {
+    padding: 0.4rem 0.6rem;
+    border-bottom: 1px solid #e0e0e0;
+    width: 50%;
+}
+
+/* New Courses styles */
+
+.new_courses_button {
+    padding: 1rem 3rem 1rem 3rem;
+}
+
+
+/* New round styles */
+
+.new-round-h1 {
+    margin-bottom: 3rem;
+}
+
+.new-round-h2 {
+    margin-bottom: 1.5rem;
+}
+
+.round-bottom {
+    margin-bottom: 1.5rem;
+}
+
+.round-select {
+    width: 8rem;
+    margin: 0 auto;
+}
+
+/* Number of players */
+
+.num_players_h2 {
+    margin-bottom: 4rem;
+}
+
+.num_players_select {
+    width: 15rem;
+    margin: 0 auto;
+    margin-bottom: 3rem;
+
+}
+
+/* Homepage */
+
+.homepage-h1 {
+    margin-bottom: 1rem;
+}
+
+/* Homepage styles partially provided by ChatGPT, adjusted afterwards */
+
+/* Greeting */
+
+.greeting-row h1 {
+
+    margin: 0;
+    text-align: center;
+}
+
+.greeting-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+}
+
+.greeting-ball {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: url('/static/images/golf-ball-trimmed.webp') no-repeat center/cover;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #0f3e0f;
+    text-align: center;
+
+}
+
+
+/* Latest Round */
+
+.latest-h1 {
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+}
+
+.latest-round {
+    margin-bottom: 2.5rem;
+}
+
+.round-message {
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6rem;
+    margin-top: 3rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+
+}
+
+.message-ball {
+    width: 16rem;
+    height: 16rem;
+    border-radius: 50%;
+    background: url('/static/images/golf-ball-trimmed.webp') no-repeat center/cover;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #0f3e0f;
+    text-align: center;
+
+}
+
+.round-message-box {
+    margin-bottom: 6rem;
+}
+
+/* All time stats */
+
+.stats-green-message {
+    background: radial-gradient(ellipse at center, #6dbf4b 0%, #0f3e0f 100%);
+    color: #fff;
+    padding: 1.5rem;
+    border-radius: 2rem;
+    font-size: 1.1rem;
+    /* #6dbf4b , #4e944f*/
+    text-align: center;
+    max-width: 800px;
+    margin: 2rem auto;
+    box-shadow: 0 0 15px rgba(0, 50, 0, 0.3), inset 0 0 10px rgba(255, 255, 255, 0.1);
+    font-family: 'Georgia', serif;
+    position: relative;
+}
+
+.stats-green-message::before {
+    content: "⛳";
+    position: absolute;
+    top: -1.5rem;
+    left: 1rem;
+    font-size: 2rem;
+}
+
+/* Stat grid layout */
+
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem;
+
+}
+
+.stat-grid>div {
+    width: 12rem;
+    height: 12rem;
+    border-radius: 50%;
+    background: url('/static/images/golf-ball-trimmed.webp') no-repeat center/cover;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #0f3e0f;
+    text-align: center;
+    margin: 0 auto;
+
+}
+
+.stat-label {
+    font-size: 1rem;
+    margin-bottom: 0.3rem;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+/*---------------------------------------------------------------------------------------------*/
+/* MEDIA QUERIES */
+/*---------------------------------------------------------------------------------------------*/
+
+/* Scorecard Layout */
+
+
+/* Small Laptop */
+
+.small-laptop {
+    display: none;
+}
+
+@media (min-width: 1000px) and (max-width: 1200px) {
+    .small-laptop {
+        display: block;
+
+    }
+
+    .desktop-scorecard {
+        display: none;
+    }
+
+    .small-laptop table {
+        margin-bottom: 2rem;
+        margin-left: -1rem;
+        max-width: 1100px;
+        width: 100%;
+        min-width: 969.5px;
+    }
+}
+
+
+/* Tablet */
+
+.tablet-scorecard {
+    display: none;
+}
+
+@media (min-width: 426px) and (max-width: 1000px) {
+
+    .tablet-scorecard {
+        display: block;
+    }
+
+    .desktop-scorecard {
+        display: none;
+    }
+
+    .small-laptop {
+        display: none;
+    }
+
+    .mobile-scorecard {
+        display: none;
+    }
+
+
+    .table-container {
+        overflow-x: auto;
+        margin-bottom: 2rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 1rem;
+    }
+
+    .table-container h3 {
+        color: #fff;
+        text-align: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .table-bordered {
+        width: 100%;
+        font-size: 0.85rem;
+    }
+
+    .table-bordered td,
+    .table-bordered th {
+        padding: 0.4rem;
+        text-align: center;
+        word-wrap: break-word;
+    }
+}
+
+/* Mobile */
+
+.mobile-scorecard {
+    display: none;
+}
+
+@media (max-width: 425px) {
+    .container {
+        max-width: 100% !important;
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .table-container {
+        width: 100% !important;
+        padding: 0 !important;
+    }
+
+    table {
+        width: 100% !important;
+        table-layout: fixed;
+    }
+
+    .desktop-scorecard {
+        display: none;
+    }
+
+    .mobile-scorecard {
+        display: block;
+        width: 100%;
+
+    }
+
+    .table-container {
+        overflow-x: auto;
+        margin-bottom: 2rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 1rem;
+    }
+
+    .table-container h3 {
+        color: #fff;
+        text-align: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .table-bordered {
+        width: 100%;
+        font-size: 0.85rem;
+    }
+
+    .table-bordered td,
+    .table-bordered th {
+        padding: 0.4rem;
+        text-align: center;
+        word-wrap: break-word;
+    }
+
+    .shrink-font {
+        font-size: 0.7rem;
+    }
+}
+
+/* Small Screen Fixes */
+
+@media (min-width: 550px) and (max-width: 995px) {
+    .stat-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 767px) {
+    .round-message {
+        gap: 0rem;
+    }
+
+    h1 {
+        margin-top: 1.5rem;
+    }
+}
+
+@media (max-width: 425px) {
+    .login-container {
+        margin-top: 6rem;
+    }
+}
+
+
+/* Tables */
+
+@media (min-width: 768px) {
+    .table-container {
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+
+    .table-container table {
+        min-width: 100%;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+.golf-green-message {
+  position: relative;
+  background:
+
+    conic-gradient(
+      from 0deg at 50% 50%,
+      #2e6e2e,
+      #3f7e3f,
+      #2e6e2e,
+      #3f7e3f,
+      #2e6e2e
+    );
+  background-blend-mode: overlay;
+  background-size: cover;
+  border-radius: 60% 40% 65% 35% / 55% 45% 55% 45%;
+  padding: 3rem 2rem 2rem 2rem;
+  max-width: 900px;
+
+  margin: 5rem auto;
+  text-align: center;
+  color: white;
+  font-family: 'Georgia', serif;
+  font-size: 1.2rem;
+  box-shadow:
+    inset 0 0 20px rgba(0, 0, 0, 0.3),
+    0 8px 25px rgba(0, 0, 0, 0.4),
+    0 0 0 10px #3b703b;  subtle fringe
+
+}
+
+/*
+.greeting-ball {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background: radial-gradient(#ffffff 85%, #e0e0e0);
+    box-shadow: inset 0 0 6px #ccc, 0 4px 12px rgba(0, 0, 0, 0.2);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #0f3e0f;
+    text-align: center;
+
+}
+
+.greeting-ball::before {
+*/
+
+/* Golf ball dimples */
+/*
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-image: radial-gradient(circle, #ddd 1px, transparent 1px);
+    background-size: 8px 8px;
+    opacity: 0.25;
+    pointer-events: none;
+}
+
+.greeting-ball .stat-label {
+    font-size: 0.75rem;
+    margin-bottom: 0.2rem;
+}
+
+.greeting-ball .stat-value {
+    font-size: 1.4rem;
+    font-weight: bold;
+} */
+
+
+
+/*
+.stat-grid>div {
+    background: radial-gradient(#ffffff 85%, #e0e0e0);
+    border-radius: 50%;
+    width: 160px;
+    height: 160px;
+    margin: auto;
+    box-shadow: inset 0 0 6px #ccc, 0 4px 12px rgba(0, 0, 0, 0.2);
+    color: #0f3e0f;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+}
+
+.stat-grid>div::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-image: radial-gradient(circle, #ddd 1px, transparent 1px);
+    background-size: 8px 8px;
+    opacity: 0.25;
+    pointer-events: none;
+}
+
+*/
+
+/*
+
+.message-ball {
+    width: 12rem;
+    height: 12rem;
+    border-radius: 50%;
+    background: radial-gradient(#ffffff 85%, #e0e0e0);
+    box-shadow: inset 0 0 6px #ccc, 0 4px 12px rgba(0, 0, 0, 0.2);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #0f3e0f;
+    text-align: center;
+
+}
+
+.message-ball::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-image: radial-gradient(circle, #ddd 1px, transparent 1px);
+    background-size: 8px 8px;
+    opacity: 0.25;
+    pointer-events: none;
+}
+
+*/

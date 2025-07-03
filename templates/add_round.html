@@ -1,0 +1,72 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Add Round
+{% endblock %}
+
+{% block main %}
+    <h1>Add new {{holes}} Hole Round</h1>
+
+    <form action="/add_round" method="post">
+    <!-- Pass holes, players, player_ids as hidden inputs-->
+        <input type="hidden" name="holes" value="{{holes}}">
+        <input type="hidden" name="players" value="{{players}}">
+        {% if players > 1 %}
+            <input type="hidden" name="player_ids" value='{{player_ids | tojson | safe }}'>
+        {% endif %}
+
+    <!-- Select course via dropdown select input-->
+        <div class="mb-3">
+            <h2>Course Name</h2>
+            <select name="course" required class="form-select round-select" aria-label="Default select">
+                <option selected value="">Course</option>
+                {% if holes == 18 %}
+                    {% for course in course_18%}
+                        <option value="{{course.name}}">{{course.name}}</option>
+                    {% endfor %}
+                {% endif %}
+
+                {% if holes == 9 %}
+                    {% for course in course_18 %}
+                        <option value="{{course.name}}">{{course.name}}</option>
+                    {% endfor %}
+                {% endif %}
+            </select>
+        </div>
+    <!-- Provide date-->
+        <div class="mb-3">
+            <h2>Date</h2>
+            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="date" placeholder="Date" required type="date">
+        </div>
+    <!-- Provide scores for each player on each hole-->
+        {% for hole in range(1, 10) %}
+            <div class="new_hole">
+                <h2>Hole {{hole}}</h2>
+                {% for player in range(players)%}
+                    <div class="mb-3">
+                        <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="player_{{player}}_score_{{hole}}" placeholder="{{player_names[player]}}" required type="text">
+                    </div>
+                {% endfor %}
+
+            </div>
+        {% endfor %}
+
+        {% if holes == 18 %}
+            {% for hole in range(10, 19) %}
+                <div class="new_hole">
+                    <h2>Hole {{hole}}</h2>
+                    {% for player in range(players) %}
+                        <div class="mb-3">
+                            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="player_{{player}}_score_{{hole}}" placeholder="{{player_names[player]}}" required type="text">
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <button class="btn btn-primary" type="submit">Add Round</button>
+    </form>
+
+
+
+{% endblock %}

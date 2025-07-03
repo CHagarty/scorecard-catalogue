@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+
+<!-- NOT CURRENTLY USING. MAY USE IN THE FUTURE. -->
+
+{% block title %}
+    New 9 Hole Course
+{% endblock %}
+
+{% block main %}
+    <h1>Create new 9 hole course</h1>
+    <p>For the yardage, use the tee colour that you would typically play from</p>
+    <p>If the course you are creating is a 9 hole course but the club provides an 18 hole scorecard, create it as an 18 hole course</p>
+
+    <form action="/new9" method="post">
+        <div class="mb-3">
+            <h2>Course Name</h2>
+            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="course" placeholder="Course" required type="text">
+        </div>
+
+        {% for hole in range(1, 10) %}
+            <div class="new_hole">
+                <h2>Hole {{hole}}</h2>
+                <div class="mb-3">
+                    <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="yards_{{hole}}" placeholder="Yards" required type="text">
+                </div>
+                <div class="mb-3">
+                    <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="handicap_{{hole}}" placeholder="Handicap" required type="text">
+                </div>
+                <div class="mb-3">
+                    <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="par_{{hole}}" placeholder="Par" required type="text">
+                </div>
+            </div>
+        {% endfor %}
+
+
+        <h2>Course Total</h2>
+        <div class="mb-3">
+            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="total" placeholder="Total" required type="text">
+        </div>
+
+
+        <button class="btn btn-primary" type="submit">Create Course</button>
+    </form>
+{% endblock %}

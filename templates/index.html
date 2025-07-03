@@ -1,0 +1,901 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Home
+{% endblock %}
+
+{% block main %}
+
+<!-- Greeting -->
+    <h1 class="homepage-h1">Hello, {{ name }}.</h1>
+    <div class="greeting-row">
+
+        <div class="greeting-ball">
+            <div class="stat-label">Handicap</div>
+            <div class="stat-value">{{ stats.handicap_index }}</div>
+        </div>
+    </div>
+
+<!-- Most recent round -->
+
+    <h2 class="latest-h1">Here's Your Latest Round:</h2>
+
+    <div class="latest-round">
+        {% for rounds, scores, courses, players, date in combined %}
+
+    <!-- 18 hole round -->
+
+            {% if rounds.holes == 18 %}
+    <!-- Desktop 18 Hole Scorecard-->
+                <div class="table-container desktop-scorecard">
+                    <table class="table-bordered">
+                        <tr>
+                            <th colspan="22">{{courses.name}}</th>
+                        </tr>
+                        <tr>
+                            <th colspan="22">{{date}}</th>
+                        </tr>
+            <!-- Holes headers -->
+                        <tr>
+                            <td class="t-header">Hole</td>
+
+                            {% for hole in range(1, 10) %}
+                                <td class="hole">{{hole}}</td>
+                            {% endfor %}
+
+                            <td class="out">Out</td>
+
+                            {% for hole in range(10, 19)%}
+                                <td class="hole">{{hole}}</td>
+                            {% endfor %}
+
+                            <td class="in">In</td>
+                            <td class="t-header">Total</td>
+                        </tr>
+            <!-- Yardage headers -->
+                        <tr>
+                            <td class="t-header">Yardage</td>
+
+                            {% for num in range(1, 10) %}
+                                <td class="yards">{{ courses["yards_" ~ num] }}</td>
+                            {% endfor %}
+
+                            <td class="out">{{courses.front_yards}}</td>
+
+                            {% for num in range(10, 19) %}
+                                <td class="yards"> {{courses["yards_" ~ num] }}</td>
+                            {% endfor %}
+
+                            <td class="in">{{courses.back_yards}}</td>
+
+                            <td class="t-header">{{courses.total_yards}}</td>
+                        </tr>
+            <!-- Handicap headers -->
+                        <tr>
+                            <td class="t-header">Handicap</td>
+
+                            {% for num in range(1, 10) %}
+                                <td class="handicap">{{ courses["handicap_" ~ num]}}</td>
+                            {% endfor %}
+
+                            <td class="out"></td>
+
+                            {% for num in range(10, 19) %}
+                                <td class="handicap">{{ courses["handicap_" ~ num] }}</td>
+                            {% endfor %}
+
+                            <td class="in"></td>
+
+                            <td class="t-header"></td>
+                        </tr>
+            <!-- Par headers -->
+                        <tr>
+                            <td class="t-header">Par</td>
+
+                            {% for num in range(1, 10) %}
+                                <td class="par">{{ courses["par_" ~ num] }}</td>
+                            {% endfor %}
+
+                            <td class="out">{{courses.front}}</td>
+
+                            {% for num in range(10, 19) %}
+                                <td class="par">{{ courses["par_" ~ num] }}</td>
+                            {% endfor %}
+
+                            <td class="in">{{courses.back}}</td>
+
+                            <td class="t-header">{{courses.total}}</td>
+                        </tr>
+            <!-- User scores -->
+                        <tr>
+                            <td class="score">{{name}}</td>
+
+                            {% for num in range(1, 10) %}
+                                <td class="score">{{ scores[0]["hole_" ~ num] }}</td>
+                            {% endfor %}
+
+                            <td class="out">{{scores[0].front}}</td>
+
+                            {% for num in range(10, 19) %}
+                                <td class="score">{{ scores[0]["hole_" ~ num] }}</td>
+                            {% endfor %}
+
+                            <td class="in">{{scores[0].back}}</td>
+
+                            <td class="t-header">{{scores[0].total}}</td>
+                        </tr>
+            <!-- Player(s) scores, if any -->
+                        {% for i in range(players|length) %}
+                            <tr>
+                                <td class="score">{{ players[i] }}</td>
+
+                                {% for num in range(1, 10) %}
+                                    <td class="score">{{ scores[i + 1]["hole_" ~ num] }}</td>
+                                {% endfor %}
+
+                                <td class="out">{{ scores[i + 1].front }}</td>
+
+                                {% for num in range(10, 19) %}
+                                    <td class="score">{{ scores[i + 1]["hole_" ~ num] }}</td>
+                                {% endfor %}
+
+                                <td class="in">{{ scores[i + 1].back }}</td>
+                                <td class="t-header">{{ scores[i + 1].total }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+
+    <!-- Small Laptop Scorecard 18 Holes (1000px - 1200px)-->
+
+                <div class="table-responsive-md small-laptop">
+                    <table class="table-bordered ">
+                        <tr>
+                            <th colspan="22">{{courses.name}}</th>
+                        </tr>
+                        <tr>
+                            <th colspan="22">{{date}}</th>
+                        </tr>
+            <!-- Hole headers-->
+                        <tr>
+                            <td class="t-header">Hole</td>
+
+                            {% for hole in range(1, 10) %}
+                                <td class="hole">{{hole}}</td>
+                            {% endfor %}
+
+                            <td class="out">Out</td>
+
+                            {% for hole in range(10, 19)%}
+                                <td class="hole">{{hole}}</td>
+                            {% endfor %}
+
+                            <td class="in">In</td>
+                            <td class="t-header">Total</td>
+                        </tr>
+            <!-- Yardage headers -->
+                        <tr>
+                            <td class="t-header">Yardage</td>
+
+                            {% for num in range(1, 10) %}
+                                <td class="yards">{{ courses["yards_" ~ num] }}</td>
+                            {% endfor %}
+
+                            <td class="out">{{courses.front_yards}}</td>
+
+                            {% for num in range(10, 19) %}
+                                <td class="yards"> {{courses["yards_" ~ num] }}</td>
+                            {% endfor %}
+
+                            <td class="in">{{courses.back_yards}}</td>
+
+                            <td class="t-header">{{courses.total_yards}}</td>
+                        </tr>
+            <!-- Handicap headers-->
+                        <tr>
+                            <td class="t-header">Handicap</td>
+
+                            {% for num in range(1, 10) %}
+                                <td class="handicap">{{ courses["handicap_" ~ num]}}</td>
+                            {% endfor %}
+
+                            <td class="out"></td>
+
+                            {% for num in range(10, 19) %}
+                                <td class="handicap">{{ courses["handicap_" ~ num] }}</td>
+                            {% endfor %}
+
+                            <td class="in"></td>
+
+                            <td class="t-header"></td>
+                        </tr>
+            <!-- Par headers-->
+                        <tr>
+                            <td class="t-header">Par</td>
+
+                            {% for num in range(1, 10) %}
+                                <td class="par">{{ courses["par_" ~ num] }}</td>
+                            {% endfor %}
+
+                            <td class="out">{{courses.front}}</td>
+
+                            {% for num in range(10, 19) %}
+                                <td class="par">{{ courses["par_" ~ num] }}</td>
+                            {% endfor %}
+
+                            <td class="in">{{courses.back}}</td>
+
+                            <td class="t-header">{{courses.total}}</td>
+                        </tr>
+            <!-- User's scores-->
+                        <tr>
+                            <td class="score">{{name}}</td>
+
+                            {% for num in range(1, 10) %}
+                                <td class="score">{{ scores[0]["hole_" ~ num] }}</td>
+                            {% endfor %}
+
+                            <td class="out">{{scores[0].front}}</td>
+
+                            {% for num in range(10, 19) %}
+                                <td class="score">{{ scores[0]["hole_" ~ num] }}</td>
+                            {% endfor %}
+
+                            <td class="in">{{scores[0].back}}</td>
+
+                            <td class="t-header">{{scores[0].total}}</td>
+                        </tr>
+            <!-- Player(s) scores, if any -->
+                        {% for i in range(players|length) %}
+                            <tr>
+                                <td class="score">{{ players[i] }}</td>
+
+                                {% for num in range(1, 10) %}
+                                    <td class="score">{{ scores[i + 1]["hole_" ~ num] }}</td>
+                                {% endfor %}
+
+                                <td class="out">{{ scores[i + 1].front }}</td>
+
+                                {% for num in range(10, 19) %}
+                                    <td class="score">{{ scores[i + 1]["hole_" ~ num] }}</td>
+                                {% endfor %}
+
+                                <td class="in">{{ scores[i + 1].back }}</td>
+                                <td class="t-header">{{ scores[i + 1].total }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+
+    <!-- Tablet 18 Hole Scorecard-->
+
+                <div class="tablet-scorecard">
+                    <div class="table-container">
+                        <table class="table-bordered">
+                            <tr>
+                                <th colspan="{{ 5 + players | length}}">{{courses.name}}</th>
+                            </tr>
+                            <tr>
+                                <th colspan="{{ 5 + players | length }}">{{date}}</th>
+                            </tr>
+                <!-- Headers, vertical-->
+                            <tr>
+                                <th>Hole</th>
+                                <th>Yards</th>
+                                <th>HCP</th>
+                                <th>Par</th>
+                                <th>{{ name }}</th>
+                                {% for player in players %}
+                                    <th>{{ player }}</th>
+                                {% endfor %}
+                            </tr>
+
+                <!-- Front 9 -->
+
+                            {% for hole in range(1, 10) %}
+                                <tr>
+                                    <td class="hole">{{ hole }}</td>
+                                    <td class="yards"> {{ courses["yards_" ~ hole] }}</td>
+                                    <td class="handicap">{{ courses["handicap_" ~ hole] }}</td>
+                                    <td class="par">{{ courses["par_" ~ hole] }}</td>
+                                    <td>{{ scores[0]["hole_" ~ hole] }}</td>
+                                    {% for i in range(players|length) %}
+                                        <td>{{ scores[i+1]["hole_" ~ hole] }}</td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+
+                <!-- Front / Out -->
+
+                            <tr>
+                                <td class="out"><strong>Front</strong></td>
+                                <td class="out">{{ courses.front_yards }}</td>
+                                <td class="out"></td>
+                                <td class="out">{{ courses.front }}</td>
+                                <td class="out"><strong>{{ scores[0].front }}</strong></td>
+                                {% for i in range(players|length) %}
+                                    <td class="out"><strong>{{ scores[i+1].front }}</strong></td>
+                                {% endfor %}
+                            </tr>
+
+                <!-- Back 9 -->
+
+                            {% for hole in range(10, 19) %}
+                                <tr>
+                                    <td class="hole">{{ hole }}</td>
+                                    <td class="yards"> {{ courses["yards_" ~ hole] }}</td>
+                                    <td class="handicap">{{ courses["handicap_" ~ hole] }}</td>
+                                    <td class="par">{{ courses["par_" ~ hole] }}</td>
+                                    <td>{{ scores[0]["hole_" ~ hole] }}</td>
+                                    {% for i in range(players|length) %}
+                                        <td>{{ scores[i+1]["hole_" ~ hole] }}</td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+
+                <!-- Back / In -->
+
+                            <tr>
+                                <td class="in"><strong>Back</strong></td>
+                                <td class="in">{{ courses.back_yards }}</td>
+                                <td class="in"></td>
+                                <td class="in">{{ courses.back }}</td>
+                                <td class="in"><strong>{{ scores[0].back }}</strong></td>
+                                {% for i in range(players|length) %}
+                                    <td class="in"><strong>{{ scores[i+1].back }}</strong></td>
+                                {% endfor %}
+                            </tr>
+
+                <!-- Totals -->
+
+                            <tr>
+                                <td class="t-header"><strong>Total</strong></td>
+                                <td class="t-header">{{ courses.total_yards }}</td>
+                                <td class="t-header"></td>
+                                <td class="t-header">{{ courses.total }}</td>
+                                <td class="t-header"><strong>{{ scores[0].total }}</strong></td>
+                                {% for i in range(players|length) %}
+                                    <td class="t-header"><strong>{{ scores[i+1].total }}</strong></td>
+                                {% endfor %}
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+    <!-- Mobile 18 Hole Scorecard-->
+
+                <div class="mobile-scorecard">
+                    <div class="table-container">
+                        <table class="table-bordered">
+                            <tr>
+                                <th colspan="{{ 4 + players | length}}">{{courses.name}}</th>
+                            </tr>
+                            <tr>
+                                <th colspan="{{ 4 + players | length }}">{{date}}</th>
+                            </tr>
+                <!-- Headers, vertical-->
+                            <tr>
+                                <th class="{% if players|length == 3 %}shrink-font{% endif %}">Hole</th>
+                                <th class="{% if players|length == 3 %}shrink-font{% endif %}">Yards</th>
+
+                                <th class="{% if players|length == 3 %}shrink-font{% endif %}">Par</th>
+                                <th><span class="{% if players|length == 3 %}shrink-font{% endif %}">{{ name }}</span></th>
+                                {% for player in players %}
+                                    <th><span class="{% if players|length == 3 %}shrink-font{% endif %}">{{ player }}</span></th>
+                                {% endfor %}
+                            </tr>
+
+                <!-- Front 9 -->
+
+                            {% for hole in range(1, 10) %}
+                                <tr>
+                                    <td class="hole">{{ hole }}</td>
+                                    <td class="yards"> {{ courses["yards_" ~ hole] }}</td>
+
+                                    <td class="par">{{ courses["par_" ~ hole] }}</td>
+                                    <td>{{ scores[0]["hole_" ~ hole] }}</td>
+                                    {% for i in range(players|length) %}
+                                        <td>{{ scores[i+1]["hole_" ~ hole] }}</td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+
+                <!-- Front / Out -->
+
+                            <tr>
+                                <td class="out {% if players|length == 3 %}shrink-font{% endif %}"><strong>Front</strong></td>
+                                <td class="out {% if players|length == 3 %}shrink-font{% endif %}">{{ courses.front_yards }}</td>
+
+                                <td class="out">{{ courses.front }}</td>
+                                <td class="out"><strong>{{ scores[0].front }}</strong></td>
+                                {% for i in range(players|length) %}
+                                    <td class="out"><strong>{{ scores[i+1].front }}</strong></td>
+                                {% endfor %}
+                            </tr>
+
+                <!-- Back 9 -->
+
+                            {% for hole in range(10, 19) %}
+                                <tr>
+                                    <td class="hole">{{ hole }}</td>
+                                    <td class="yards"> {{ courses["yards_" ~ hole] }}</td>
+
+                                    <td class="par">{{ courses["par_" ~ hole] }}</td>
+                                    <td>{{ scores[0]["hole_" ~ hole] }}</td>
+                                    {% for i in range(players|length) %}
+                                        <td>{{ scores[i+1]["hole_" ~ hole] }}</td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+
+                <!-- Back / In -->
+
+                            <tr>
+                                <td class="in {% if players|length == 3 %}shrink-font{% endif %}"><strong>Back</strong></td>
+                                <td class="in {% if players|length == 3 %}shrink-font{% endif %}">{{ courses.back_yards }}</td>
+
+                                <td class="in">{{ courses.back }}</td>
+                                <td class="in"><strong>{{ scores[0].back }}</strong></td>
+                                {% for i in range(players|length) %}
+                                    <td class="in"><strong>{{ scores[i+1].back }}</strong></td>
+                                {% endfor %}
+                            </tr>
+
+                <!-- Totals -->
+
+                            <tr>
+                                <td class="t-header {% if players|length == 3 %}shrink-font{% endif %}"><strong>Total</strong></td>
+                                <td class="t-header {% if players|length == 3 %}shrink-font{% endif %}">{{ courses.total_yards }}</td>
+
+                                <td class="t-header">{{ courses.total }}</td>
+                                <td class="t-header"><strong>{{ scores[0].total }}</strong></td>
+                                {% for i in range(players|length) %}
+                                    <td class="t-header"><strong>{{ scores[i+1].total }}</strong></td>
+                                {% endfor %}
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+
+            {% endif %}
+
+    <!-- 9 hole round -->
+
+            {% if rounds.holes == 9 %}
+
+    <!-- Desktop 9 Hole Round -->
+
+                <div class="table-container desktop-scorecard">
+                    <table class="table-bordered">
+                        <tr>
+                            <th colspan="22">{{courses.name}}</th>
+                        </tr>
+                        <tr>
+                            <th colspan="22">{{date}}</th>
+                        </tr>
+            <!-- Hole headers -->
+                        <tr>
+                            <td class="t-header">Hole</td>
+
+                            {% for hole in range(1, 10) %}
+                                <td class="hole">{{hole}}</td>
+                            {% endfor %}
+                            <td class="t-header">Total</td>
+                        </tr>
+            <!-- Yardage headers-->
+                        <tr>
+                            <td class="t-header">Yardage</td>
+
+                            {% for num in range(1, 10) %}
+                                <td class="yards">{{ courses["yards_" ~ num] }}</td>
+                            {% endfor %}
+
+                            <td class="t-header">{{courses.front_yards}}</td>
+                        </tr>
+            <!-- Handicap headers-->
+                        <tr>
+                            <td class="t-header">Handicap</td>
+
+                            {% for num in range(1, 10) %}
+                                <td class="handicap">{{ courses["handicap_" ~ num]}}</td>
+                            {% endfor %}
+
+                            <td class="t-header"></td>
+                        </tr>
+            <!-- Par headers-->
+                        <tr>
+                            <td class="t-header">Par</td>
+
+                            {% for num in range(1, 10) %}
+                                <td class="par">{{ courses["par_" ~ num] }}</td>
+                            {% endfor %}
+
+                            <td class="t-header">{{courses.front}}</td>
+                        </tr>
+            <!-- User's scores-->
+                        <tr>
+                            <td class="score">{{name}}</td>
+
+                            {% for num in range(1, 10) %}
+                                <td class="score">{{ scores[0]["hole_" ~ num] }}</td>
+                            {% endfor %}
+                            <td class="t-header">{{scores[0].total}}</td>
+                        </tr>
+            <!-- Player's scores, if any -->
+                        {% for i in range(players|length) %}
+                            <tr>
+                                <td class="score">{{ players[i] }}</td>
+
+                                {% for num in range(1, 10) %}
+                                    <td class="score">{{ scores[i + 1]["hole_" ~ num] }}</td>
+                                {% endfor %}
+                                <td class="t-header">{{ scores[i + 1].total }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+
+
+    <!-- Small Laptop 9 Hole Round -->
+
+                <div class="table-responsive-md small-laptop">
+                    <table class="table-bordered ">
+                        <tr>
+                            <th colspan="22">{{courses.name}}</th>
+                        </tr>
+                        <tr>
+                            <th colspan="22">{{date}}</th>
+                        </tr>
+            <!-- Hole headers -->
+                        <tr>
+                            <td class="t-header">Hole</td>
+
+                            {% for hole in range(1, 10) %}
+                                <td class="hole">{{hole}}</td>
+                            {% endfor %}
+                            <td class="t-header">Total</td>
+                        </tr>
+            <!-- Yardage headers-->
+                        <tr>
+                            <td class="t-header">Yardage</td>
+
+                            {% for num in range(1, 10) %}
+                                <td class="yards">{{ courses["yards_" ~ num] }}</td>
+                            {% endfor %}
+
+                            <td class="t-header">{{courses.front_yards}}</td>
+                        </tr>
+            <!-- Handicap headers -->
+                        <tr>
+                            <td class="t-header">Handicap</td>
+
+                            {% for num in range(1, 10) %}
+                                <td class="handicap">{{ courses["handicap_" ~ num]}}</td>
+                            {% endfor %}
+
+                            <td class="t-header"></td>
+                        </tr>
+            <!-- Par headers-->
+                        <tr>
+                            <td class="t-header">Par</td>
+
+                            {% for num in range(1, 10) %}
+                                <td class="par">{{ courses["par_" ~ num] }}</td>
+                            {% endfor %}
+
+                            <td class="t-header">{{courses.front}}</td>
+                        </tr>
+            <!-- User's scores -->
+                        <tr>
+                            <td class="score">{{name}}</td>
+
+                            {% for num in range(1, 10) %}
+                                <td class="score">{{ scores[0]["hole_" ~ num] }}</td>
+                            {% endfor %}
+                            <td class="t-header">{{scores[0].total}}</td>
+                        </tr>
+            <!-- Player(s) scores, if any -->
+                        {% for i in range(players|length) %}
+                            <tr>
+                                <td class="score">{{ players[i] }}</td>
+
+                                {% for num in range(1, 10) %}
+                                    <td class="score">{{ scores[i + 1]["hole_" ~ num] }}</td>
+                                {% endfor %}
+                                <td class="t-header">{{ scores[i + 1].total }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+
+    <!-- Tablet 9 Hole Scorecard-->
+
+                <div class="tablet-scorecard">
+                    <div class="table-container">
+                        <table class="table-bordered">
+                            <tr>
+                                <th colspan="{{ 5 + players | length}}">{{courses.name}}</th>
+                            </tr>
+                            <tr>
+                                <th colspan="{{ 5 + players | length }}">{{date}}</th>
+                            </tr>
+                <!-- Headers, vertical -->
+                            <tr>
+                                <th>Hole</th>
+                                <th>Yards</th>
+                                <th>HCP</th>
+                                <th>Par</th>
+                                <th>{{ name }}</th>
+                                {% for player in players %}
+                                    <th>{{ player }}</th>
+                                {% endfor %}
+                            </tr>
+
+                <!-- Front 9 -->
+
+                            {% for hole in range(1, 10) %}
+                                <tr>
+                                    <td class="hole">{{ hole }}</td>
+                                    <td class="yards"> {{ courses["yards_" ~ hole] }}</td>
+                                    <td class="handicap">{{ courses["handicap_" ~ hole] }}</td>
+                                    <td class="par">{{ courses["par_" ~ hole] }}</td>
+                                    <td>{{ scores[0]["hole_" ~ hole] }}</td>
+                                    {% for i in range(players|length) %}
+                                        <td>{{ scores[i+1]["hole_" ~ hole] }}</td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+
+
+
+                <!-- Totals -->
+
+                            <tr>
+                                <td class="t-header"><strong>Total</strong></td>
+                                <td class="t-header">{{ courses.total_yards }}</td>
+                                <td class="t-header"></td>
+                                <td class="t-header">{{ courses.total }}</td>
+                                <td class="t-header"><strong>{{ scores[0].total }}</strong></td>
+                                {% for i in range(players|length) %}
+                                    <td class="t-header"><strong>{{ scores[i+1].total }}</strong></td>
+                                {% endfor %}
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+    <!-- Mobile 9 Hole Scorecard-->
+
+                <div class="mobile-scorecard">
+                    <div class="table-container">
+                        <table class="table-bordered">
+                            <tr>
+                                <th colspan="{{ 4 + players | length}}">{{courses.name}}</th>
+                            </tr>
+                            <tr>
+                                <th colspan="{{ 4 + players | length }}">{{date}}</th>
+                            </tr>
+                <!-- Headers, vertical -->
+                            <tr>
+                                <th class="{% if players|length == 3 %}shrink-font{% endif %}">Hole</th>
+                                <th class="{% if players|length == 3 %}shrink-font{% endif %}">Yards</th>
+                                <th class="{% if players|length == 3 %}shrink-font{% endif %}">Par</th>
+                                <th class="{% if players|length == 3 %}shrink-font{% endif %}">{{ name }}</th>
+                                {% for player in players %}
+                                    <th class="{% if players|length == 3 %}shrink-font{% endif %}">{{ player }}</th>
+                                {% endfor %}
+                            </tr>
+
+                <!-- Front 9 -->
+
+                            {% for hole in range(1, 10) %}
+                                <tr>
+                                    <td class="hole">{{ hole }}</td>
+                                    <td class="yards"> {{ courses["yards_" ~ hole] }}</td>
+                                    <td class="par">{{ courses["par_" ~ hole] }}</td>
+                                    <td>{{ scores[0]["hole_" ~ hole] }}</td>
+                                    {% for i in range(players|length) %}
+                                        <td>{{ scores[i+1]["hole_" ~ hole] }}</td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+
+                <!-- Totals -->
+
+                            <tr>
+                                <td class="t-header {% if players|length == 3 %}shrink-font{% endif %}"><strong>Total</strong></td>
+                                <td class="t-header">{{ courses.front }}</td>
+                                <td class="t-header">{{ courses.front }}</td>
+                                <td class="t-header"><strong>{{ scores[0].total }}</strong></td>
+                                {% for i in range(players|length) %}
+                                    <td class="t-header"><strong>{{ scores[i+1].total }}</strong></td>
+                                {% endfor %}
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+<!------------------------------------------------------------------------------------------------------------------------>
+
+<!-- Average score, latest score, message -->
+    <div class="round-message">
+        <div class="message-ball">
+            <div>
+                <div class="stat-label">Last Score</div>
+                <div class="stat-value">{{ latest_score.total }}</div>
+            </div>
+        </div>
+        <div class="message-ball">
+            <div>
+                {% if recent_holes == 18 %}
+                    <div class="stat-label">Average Score</div>
+                    <div class="stat-value">{{ stats.average_18 }}</div>
+                {% endif %}
+
+                {% if recent_holes == 9 %}
+                    <div class="stat-label">Average Score</div>
+                    <div class="stat-value">{{ stats.average_9 }}</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="round-message-box">
+
+        {% set average = stats.average_18 if recent_holes == 18 else stats.average_9 %}
+        {% set difference = average - latest_score.total %}
+
+        {% if difference >= 0 %}
+
+            {% if difference > 9 %}
+                <h3>You shot {{ difference | round(1) }} less than average.</h3>
+                <h3>Liar</h3>
+
+            {% elif difference > 5 %}
+                <h3>You shot {{ difference | round(1) }} less than average.</h3>
+                <h3>You're getting pretty good at cheating. Keep it up.</h3>
+
+            {% elif difference == 5 %}
+                <h3>You shot {{ difference }} less than average.</h3>
+                <h3>Everybody's really impressed.</h3>
+
+            {% elif difference > 0 %}
+                <h3>You shot {{ difference | round(1) }} less than average.</h3>
+                <h3>You don't suck! Bet you've never heard that before.</h3>
+
+            {% elif difference == 0 %}
+                <h3>You shot your average score.</h3>
+                <h3>Bet that's not the only way you're average.</h3>
+            {% endif %}
+
+        {% else %}
+            {% set over = latest_score.total - average %}
+
+            {% if over < 5 %}
+                <h3>You shot {{ over | round(1) }} more than average.</h3>
+                <h3>At least you're honest.</h3>
+
+            {% elif over < 10 %}
+                <h3>You shot {{ over | round(1) }} more than average.</h3>
+                <h3>You suck!</h3>
+
+            {% elif over < 15 %}
+                <h3>You shot {{ over | round(1) }} more than average.</h3>
+                <h3>If you're having thoughts of suicide, call 9-8-8.</h3>
+
+            {% else %}
+                <h3>Oh my god, you shot {{ over | round(1) }} more than average.</h3>
+                <h3>Don't even bother calling 9-8-8, just do it.</h3>
+            {% endif %}
+        {% endif %}
+
+    </div>
+
+<!----------------------------------------------------------------------------------------------------------------------------->
+
+<!-- All time stats -->
+
+    <div class="stats-green-message">
+        <h2>All time stats</h2>
+        <div class="stat-grid">
+            <div>
+                <div class="stat-label">Rounds Played</div>
+                <div class="stat-value">{{ stats.rounds_played }}</div>
+            </div>
+
+            {% if recent_holes == 18 %}
+                <div>
+                    <div class="stat-label">Average 9 Holes</div>
+                    <div class="stat-value">{{ stats.average_9 }}</div>
+                </div>
+            {% endif %}
+
+            {% if recent_holes == 9 %}
+                <div>
+                    <div class="stat-label">Average 18 Holes</div>
+                    <div class="stat-value">{{ stats.average_18 }}</div>
+                </div>
+            {% endif %}
+
+            <div>
+                <div class="stat-label">Best 18 Holes</div>
+                <div class="stat-value">{{ stats.best_18 }}</div>
+            </div>
+            <div>
+                <div class="stat-label">Best 9 Holes</div>
+                <div class="stat-value">{{ stats.best_9 }}</div>
+            </div>
+            <div>
+                <div class="stat-label">Average Front</div>
+                <div class="stat-value">{{ stats.average_front }}</div>
+            </div>
+            <div>
+                <div class="stat-label">Average Back</div>
+                <div class="stat-value">{{ stats.average_back }}</div>
+            </div>
+            <div>
+                <div class="stat-label">Best Front</div>
+                <div class="stat-value">{{ stats.best_front }}</div>
+            </div>
+            <div>
+                <div class="stat-label">Best Back</div>
+                <div class="stat-value">{{ stats.best_back }}</div>
+            </div>
+            <div>
+                <div class="stat-label">Holes in One</div>
+                {% if stats.hole_in_one == 0 %}
+                    <div class="stat-value">😂</div>
+                {% else %}
+                    <div class="stat-value">{{ stats.hole_in_one}}</div>
+                {% endif %}
+            </div>
+            <div>
+                <div class="stat-label">Albatrosses</div>
+                {% if stats.albatrosses == 0 %}
+                    <div class="stat-value">😂</div>
+                {% else %}
+                    <div class="stat-value">{{ stats.albatrosses }}</div>
+                {% endif %}
+            </div>
+            <div>
+                <div class="stat-label">Eagles</div>
+                {% if stats.eagles == 0 %}
+                    <div class="stat-value">😂</div>
+                {% else %}
+                    <div class="stat-value">{{ stats.eagles }}</div>
+                {% endif %}
+            </div>
+            <div>
+                <div class="stat-label">Birdies</div>
+                {% if stats.birdies == 0 %}
+                    <div class="stat-value">😂</div>
+                {% else %}
+                    <div class="stat-value">{{ stats.birdies }}</div>
+                {% endif %}
+            </div>
+            <div>
+                <div class="stat-label">Pars</div>
+                <div class="stat-value">{{ stats.pars}}</div>
+            </div>
+            <div>
+                <div class="stat-label">Bogeys</div>
+                <div class="stat-value">{{ stats.bogeys}}</div>
+            </div>
+            <div>
+                <div class="stat-label">Double Bogeys</div>
+                <div class="stat-value">{{ stats.double_bogeys }}</div>
+            </div>
+            <div>
+                <div class="stat-label">Triple Bogeys</div>
+                <div class="stat-value">{{ stats.triple_bogeys}}</div>
+            </div>
+
+
+
+        </div>
+
+
+{% endblock %}

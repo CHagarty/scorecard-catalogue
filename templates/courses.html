@@ -1,0 +1,316 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Courses
+{% endblock %}
+
+{% block main %}
+    <h1>My Courses</h1>
+
+    {% for item in items %}
+
+<!-- Desktop Scorecard-->
+
+        <div class="table-container desktop-scorecard">
+            <table class="table-bordered">
+                <tr>
+                    <th colspan="22">{{item.name}}</th>
+                </tr>
+        <!-- Hole headers-->
+                <tr>
+                    <td class="t-header">Hole</td>
+
+                    {% for hole in range(1, 10) %}
+                        <td class="hole">{{hole}}</td>
+                    {% endfor %}
+
+                    <td class="out">Out</td>
+
+                    {% for hole in range(10, 19)%}
+                        <td class="hole">{{hole}}</td>
+                    {% endfor %}
+
+                    <td class="in">In</td>
+                    <td class="t-header">Total</td>
+                </tr>
+        <!-- Yardage headers-->
+                <tr>
+                    <td class="t-header">Yardage</td>
+
+                    {% for num in range(1, 10) %}
+                        <td class="yards">{{ item["yards_" ~ num] }}</td>
+                    {% endfor %}
+
+                    <td class="out">{{item.front_yards}}</td>
+
+                    {% for num in range(10, 19) %}
+                        <td class="yards"> {{item["yards_" ~ num] }}</td>
+                    {% endfor %}
+
+                    <td class="in">{{item.back_yards}}</td>
+
+                    <td class="t-header">{{item.total_yards}}</td>
+                </tr>
+        <!-- Handicap headers-->
+                <tr>
+                    <td class="t-header">Handicap</td>
+
+                    {% for num in range(1, 10) %}
+                        <td class="handicap">{{ item["handicap_" ~ num]}}</td>
+                    {% endfor %}
+
+                    <td class="out"></td>
+
+                    {% for num in range(10, 19) %}
+                        <td class="handicap">{{ item["handicap_" ~ num] }}</td>
+                    {% endfor %}
+
+                    <td class="in"></td>
+
+                    <td class="t-header"></td>
+                </tr>
+        <!-- Par headers -->
+                <tr>
+                    <td class="t-header">Par</td>
+
+                    {% for num in range(1, 10) %}
+                        <td class="par">{{ item["par_" ~ num] }}</td>
+                    {% endfor %}
+
+                    <td class="out">{{item.front}}</td>
+
+                    {% for num in range(10, 19) %}
+                        <td class="par">{{ item["par_" ~ num] }}</td>
+                    {% endfor %}
+
+                    <td class="in">{{item.back}}</td>
+
+                    <td class="t-header">{{item.total}}</td>
+                </tr>
+            </table>
+        </div>
+
+
+<!-- Small Laptop Scorecard-->
+
+        <div class="table-container small-laptop">
+            <table class="table-bordered">
+                <tr>
+                    <th colspan="22">{{item.name}}</th>
+                </tr>
+        <!-- Hole headers -->
+                <tr>
+                    <td class="t-header">Hole</td>
+
+                    {% for hole in range(1, 10) %}
+                        <td class="hole">{{hole}}</td>
+                    {% endfor %}
+
+                    <td class="out">Out</td>
+
+                    {% for hole in range(10, 19)%}
+                        <td class="hole">{{hole}}</td>
+                    {% endfor %}
+
+                    <td class="in">In</td>
+                    <td class="t-header">Total</td>
+                </tr>
+        <!-- Yardage headers -->
+                <tr>
+                    <td class="t-header">Yardage</td>
+
+                    {% for num in range(1, 10) %}
+                        <td class="yards">{{ item["yards_" ~ num] }}</td>
+                    {% endfor %}
+
+                    <td class="out">{{item.front_yards}}</td>
+
+                    {% for num in range(10, 19) %}
+                        <td class="yards"> {{item["yards_" ~ num] }}</td>
+                    {% endfor %}
+
+                    <td class="in">{{item.back_yards}}</td>
+
+                    <td class="t-header">{{item.total_yards}}</td>
+                </tr>
+        <!-- Handicap headers-->
+                <tr>
+                    <td class="t-header">Handicap</td>
+
+                    {% for num in range(1, 10) %}
+                        <td class="handicap">{{ item["handicap_" ~ num]}}</td>
+                    {% endfor %}
+
+                    <td class="out"></td>
+
+                    {% for num in range(10, 19) %}
+                        <td class="handicap">{{ item["handicap_" ~ num] }}</td>
+                    {% endfor %}
+
+                    <td class="in"></td>
+
+                    <td class="t-header"></td>
+                </tr>
+        <!-- Par headers-->
+                <tr>
+                    <td class="t-header">Par</td>
+
+                    {% for num in range(1, 10) %}
+                        <td class="par">{{ item["par_" ~ num] }}</td>
+                    {% endfor %}
+
+                    <td class="out">{{item.front}}</td>
+
+                    {% for num in range(10, 19) %}
+                        <td class="par">{{ item["par_" ~ num] }}</td>
+                    {% endfor %}
+
+                    <td class="in">{{item.back}}</td>
+
+                    <td class="t-header">{{item.total}}</td>
+                </tr>
+            </table>
+        </div>
+
+<!-- Tablet Scorecard-->
+
+        <div class="tablet-scorecard">
+            <div class="table-container">
+                <table class="table-bordered">
+                    <tr>
+                        <th colspan="4">{{item.name}}</th>
+                    </tr>
+            <!-- Headers, vertical-->
+                    <tr>
+                        <th>Hole</th>
+                        <th>Yards</th>
+                        <th>HCP</th>
+                        <th>Par</th>
+                    </tr>
+
+            <!-- Front 9 -->
+
+                    {% for hole in range(1, 10) %}
+                        <tr>
+                            <td class="hole">{{ hole }}</td>
+                            <td class="yards"> {{ item["yards_" ~ hole] }}</td>
+                            <td class="handicap">{{ item["handicap_" ~ hole] }}</td>
+                            <td class="par">{{ item["par_" ~ hole] }}</td>
+                        </tr>
+                    {% endfor %}
+
+            <!-- Front / Out -->
+
+                    <tr>
+                        <td class="out"><strong>Front</strong></td>
+                        <td class="out">{{ item.front_yards }}</td>
+                        <td class="out"></td>
+                        <td class="out">{{ item.front }}</td>
+                    </tr>
+
+            <!-- Back 9 -->
+
+                    {% for hole in range(10, 19) %}
+                        <tr>
+                            <td class="hole">{{ hole }}</td>
+                            <td class="yards"> {{ item["yards_" ~ hole] }}</td>
+                            <td class="handicap">{{ item["handicap_" ~ hole] }}</td>
+                            <td class="par">{{ item["par_" ~ hole] }}</td>
+                        </tr>
+                    {% endfor %}
+
+            <!-- Back / In -->
+
+                    <tr>
+                        <td class="in"><strong>Back</strong></td>
+                        <td class="in">{{ item.back_yards }}</td>
+                        <td class="in"></td>
+                        <td class="in">{{ item.back }}</td>
+                    </tr>
+
+            <!-- Totals -->
+
+                    <tr>
+                        <td class="t-header"><strong>Total</strong></td>
+                        <td class="t-header">{{ item.total_yards }}</td>
+                        <td class="t-header"></td>
+                        <td class="t-header">{{ item.total }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+
+<!-- Mobile 18 Hole Scorecard-->
+
+        <div class="mobile-scorecard">
+            <div class="table-container">
+                <table class="table-bordered">
+                    <tr>
+                        <th colspan="4">{{item.name}}</th>
+                    </tr>
+            <!-- Headers, vertical-->
+                    <tr>
+                        <th>Hole</th>
+                        <th>Yards</th>
+                        <th>HCP</th>
+                        <th>Par</th>
+                    </tr>
+
+            <!-- Front 9 -->
+
+                    {% for hole in range(1, 10) %}
+                        <tr>
+                            <td class="hole">{{ hole }}</td>
+                            <td class="yards"> {{ item["yards_" ~ hole] }}</td>
+                            <td class="handicap">{{ item["handicap_" ~ hole] }}</td>
+                            <td class="par">{{ item["par_" ~ hole] }}</td>
+                        </tr>
+                    {% endfor %}
+
+            <!-- Front / Out -->
+
+                    <tr>
+                        <td class="out"><strong>Front</strong></td>
+                        <td class="out">{{ item.front_yards }}</td>
+                        <td class="out"></td>
+                        <td class="out">{{ item.front }}</td>
+                    </tr>
+
+            <!-- Back 9 -->
+
+                    {% for hole in range(10, 19) %}
+                        <tr>
+                            <td class="hole">{{ hole }}</td>
+                            <td class="yards"> {{ item["yards_" ~ hole] }}</td>
+                            <td class="handicap">{{ item["handicap_" ~ hole] }}</td>
+                            <td class="par">{{ item["par_" ~ hole] }}</td>
+                        </tr>
+                    {% endfor %}
+
+            <!-- Back / In -->
+
+                    <tr>
+                        <td class="in"><strong>Back</strong></td>
+                        <td class="in">{{ item.back_yards }}</td>
+                        <td class="in"></td>
+                        <td class="in">{{ item.back }}</td>
+                    </tr>
+
+            <!-- Totals -->
+
+                    <tr>
+                        <td class="t-header"><strong>Total</strong></td>
+                        <td class="t-header">{{ item.total_yards }}</td>
+                        <td class="t-header"></td>
+                        <td class="t-header">{{ item.total }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+    {% endfor %}
+
+
+
+{% endblock %}

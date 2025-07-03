@@ -1,0 +1,67 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    My Players
+{% endblock %}
+
+{% block main %}
+
+    <h1>My Players</h1>
+
+    {% for player in players %}
+
+        <div class="table-container player-table">
+            <table class="table">
+                <thead>
+                    <th colspan="2">{{player.first_name}} {{player.last_name}}</th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Rounds Played</td>
+                        <td>{{player.rounds_played}}</td>
+                    </tr>
+                    <tr>
+                        <td>Handicap</td>
+                        <td>{{player.handicap}}</td>
+                    </tr>
+                    <tr>
+                        <td>Average Score</td>
+                        <td>{{player.average_score}}</td>
+                    </tr>
+                    <tr>
+                        <td>Eagles</td>
+                        <td>{{player.eagles}}</td>
+                    </tr>
+                    <tr>
+                        <td>Birdies</td>
+                        <td>{{player.birdies}}</td>
+                    </tr>
+                    <tr>
+                        <td>Pars</td>
+                        <td>{{player.pars}}</td>
+                    </tr>
+                    <tr>
+                        <td>Bogeys</td>
+                        <td>{{player.bogeys}}</td>
+                    </tr>
+
+                    <tr>
+                        <td>Double Bogeys</td>
+                        <td>{{player.double_bogeys}}</td>
+                    </tr>
+                    <tr>
+                        <td>Triple Bogeys</td>
+                        <td>{{player.triple_bogeys}}</td>
+                    </tr>
+                    <tr>
+                        <td>Holes in One</td>
+                        <td>{{player.holes_in_one}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    {% endfor %}
+
+
+{% endblock %}

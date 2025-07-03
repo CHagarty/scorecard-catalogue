@@ -1,0 +1,84 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    New 18 Hole Course
+{% endblock %}
+
+{% block main %}
+    <h1>Create new 18 Hole course</h1>
+    <p>For the yardage, use the tee colour that you would typically play from</p>
+    <p>If the club only provides a 9 hole scorecard, fill the back out with those numbers. Double the total yardage and par.</p>
+
+    <form action="/new18" method="post">
+    <!-- Provide name of new course -->
+        <div class="mb-3">
+            <h2>Course Name</h2>
+            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="course" placeholder="Course" required type="text">
+        </div>
+
+        {% for hole in range(1, 10) %}
+    <!-- Enter yards, handicap, and par for the front 9 -->
+            <div class="new_hole">
+                <h2>Hole {{hole}}</h2>
+                <div class="mb-3">
+                    <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="yards_{{hole}}" placeholder="Yards" required type="text">
+                </div>
+                <div class="mb-3">
+                    <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="handicap_{{hole}}" placeholder="Handicap" required type="text">
+                </div>
+                <div class="mb-3">
+                    <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="par_{{hole}}" placeholder="Par" required type="text">
+                </div>
+            </div>
+        {% endfor %}
+
+        <h2>Front Par</h2>
+        <div class="mb-3">
+            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="front_par" placeholder="Out" required type="text">
+        </div>
+
+        <h2>Front Yards</h2>
+        <div class="mb-3">
+            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="front_yards" placeholder="Yards" required type="text">
+        </div>
+
+
+        {% for hole in range(10, 19) %}
+    <!-- Enter yards, handicap, and par for the back 9 -->
+            <div class="new_hole">
+                <h2>Hole {{hole}}</h2>
+                <div class="mb-3">
+                    <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="yards_{{hole}}" placeholder="Yards" required type="text">
+                </div>
+                <div class="mb-3">
+                    <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="handicap_{{hole}}" placeholder="Handicap" required type="text">
+                </div>
+                <div class="mb-3">
+                    <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="par_{{hole}}" placeholder="Par" required type="text">
+                </div>
+            </div>
+        {% endfor %}
+
+        <h2>Back Par</h2>
+        <div class="mb-3">
+            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="back_par" placeholder="In" required type="text">
+        </div>
+
+        <h2>Back Yards</h2>
+        <div class="mb-3">
+            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="back_yards" placeholder="In" required type="text">
+        </div>
+
+        <h2>Total Par</h2>
+        <div class="mb-3">
+            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="total_par" placeholder="Total" required type="text">
+        </div>
+
+        <h2>Total Yards</h2>
+        <div class="mb-3">
+            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="total_yards" placeholder="Yards" required type="text">
+        </div>
+
+        <button class="btn btn-primary" type="submit">Create Course</button>
+    </form>
+{% endblock %}

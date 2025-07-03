@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Add Players
+{% endblock %}
+
+{% block main %}
+    <h1>Add new players</h1>
+
+    <form action="/add_players" method="post">
+
+    <!-- Pass num_players as hidden input -->
+        <input type="hidden" name="num_players" value="{{players}}">
+
+    <!-- Input new player(s) first name, last name-->
+        {% for player in range(1, players) %}
+            <div class="new_hole">
+                <h2>Player {{player}}</h2>
+                <div class="mb-3">
+                    <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="first_name_{{player}}" placeholder="First Name" required type="text">
+                </div>
+                <div class="mb-3">
+                    <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="last_name_{{player}}" placeholder="Last Name" required type="text">
+                </div>
+            </div>
+        {% endfor %}
+
+    <!-- Swap singular, plural button text depending on number of players being added-->
+        {% if players == 2 %}
+            <button class="btn btn-primary" type="submit">Add player</button>
+        {% endif %}
+
+        {% if players > 2 %}
+            <button class="btn btn-primary" type="submit">Add players</button>
+        {% endif %}
+    </form>
+{% endblock %}
