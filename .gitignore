@@ -1,0 +1,36 @@
+# gitignore genereated by ChatGPT
+
+# Ignore Python cache and compiled files
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Ignore virtual environments
+venv/
+.venv/
+
+# Ignore environment variable files
+.env
+
+# Ignore SQLite databases (if you still have them locally)
+*.sqlite3
+*.db
+
+# Ignore OS metadata
+.DS_Store
+
+# Ignore IDE/editor config files
+.vscode/
+.idea/
+
+# Ignore instance folder (if used by Flask for config)
+instance/
+
+# Ignore logs
+*.log
+
+# Ignore migrations (optional, if you're using Flask-Migrate and don't want to track them)
+migrations/
+
+# Ignore Python egg info
+*.egg-info/
