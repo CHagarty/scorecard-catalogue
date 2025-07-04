@@ -1,7 +1,7 @@
 import os
 import json
 
-from cs50 import SQL
+from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, flash, redirect, render_template, url_for, request, session
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -22,8 +22,12 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
-# Configure CS50 Library to use SQLite database
-db = SQL("sqlite:///project.db")
+# Configure to use SQLAlchemy
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")  or "slqite://project.db" # This should be set in Render or locally
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+# Initialize the database
+db = SQLAlchemy(app)
 
 
 @app.after_request
