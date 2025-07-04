@@ -466,3 +466,5 @@ FOREIGN KEY(user_id) REFERENCES users(id)
 -------------------------------------------------------------------------------------------
 
 CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, username TEXT NOT NULL, hash TEXT NOT NULL, 'nickname' TEXT);
+
+psql -h hdpg-d1k1o2ili9vc738vaa10-aostname -p 5432 -U golfdb_99x4_user -d datgolfdb_99x4 -f dump.sql

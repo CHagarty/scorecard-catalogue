@@ -23,7 +23,7 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 # Configure to use SQLAlchemy
-app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")  or "slqite://project.db" # This should be set in Render or locally
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("postgresql://golfdb_99x4_user:V7TvFN8p7Vt4DZVHf1Tb3QHbPV4T7TwD@dpg-d1k1o2ili9vc738vaa10-a/golfdb_99x4")  or "slqite:///project.db" # This should be set in Render or locally
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # Initialize the database
