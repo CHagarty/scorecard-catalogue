@@ -10,6 +10,7 @@ from urllib.parse import quote, unquote
 
 from helpers import apology, login_required
 from datetime import datetime
+from models import Course18, Course9, Score18, Score9, Round, Player, User 
 
 # Configure application
 app = Flask(__name__)
@@ -23,7 +24,7 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 # Configure to use SQLAlchemy
-app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("postgresql://golfdb_99x4_user:V7TvFN8p7Vt4DZVHf1Tb3QHbPV4T7TwD@dpg-d1k1o2ili9vc738vaa10-a/golfdb_99x4")  or "slqite:///project.db" # This should be set in Render or locally
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(" ")  or "slqite:///project.db" # This should be set in Render or locally
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # Initialize the database
@@ -48,58 +49,61 @@ def after_request(response):
 @login_required
 def index():
 
-    user_list = db.execute("SELECT * FROM users WHERE id = ?", session["user_id"])
-    name = user_list[0]["nickname"]
+    user = User.query.get(session["user_id"])
+    name = user.nickname
+
 
     # DISPLAY MOST RECENT ROUND
 
-    rounds = db.execute(
-        "SELECT * FROM rounds WHERE user_id = ? ORDER BY date DESC, round_id DESC LIMIT 1", session["user_id"])
+    rounds = Round.query.filter_by(user_id=session["user_id"]) \
+            .order_by(Round.date.desc(), Round.round_id.desc()) \
+            .limit(1).all()
+
     scores = []
     players = []
     courses = []
     combined = []
     date = []
-    recent_holes = rounds[0]["holes"]
+    recent_holes = rounds[0].holes
 
     # Get scores for the latest round
 
     for i in range(len(rounds)):
 
-        if rounds[i]["holes"] == 18:
-            scores.append(db.execute(
-                "SELECT * FROM score_18 WHERE round_id = ?", rounds[i]["round_id"]))
+        if rounds[i].holes == 18:
+            score_list = Score18.query.filter_by(round_id=rounds[i].round_id).all()
+            scores.append(score_list)
+            
         else:
-            scores.append(db.execute(
-                "SELECT * FROM score_9 WHERE round_id = ?", rounds[i]["round_id"]))
-
+            score_list = Score9.query.filter_by(round_id=rounds[i].round_id).all()
+            scores.append(score_list)
+            
             # Get course info for latest round
 
-        if rounds[i]["course_18_id"]:
-            result = db.execute("SELECT * FROM courses_18 WHERE course_id = ?",
-                                rounds[i]["course_18_id"])
-            courses.append(result[0] if result else None)
+        if rounds[i].course_18_id:
+            course = Course18.query.get(rounds[i].course_18_id)
+            courses.append(course)
+
         else:
-            result = db.execute("SELECT * FROM courses_9 WHERE course_id = ?",
-                                rounds[i]["course_9_id"])
-            courses.append(result[0] if result else None)
+            course = Course9.query.get(rounds[i].course_9_id)
+            courses.append(course)
 
             # Get player names for round, if there are any
 
     for round_data in rounds:
         names = []
-        for key in ["player_id_1", "player_id_2", "player_id_3"]:
-            player_id = round_data.get(key)
+        for player_id in [round_data.player_id_1, round_data.player_id_2, round_data.player_id_3]:
             if player_id:
-                result = db.execute("SELECT first_name FROM players WHERE player_id = ?", player_id)
-                if result:
-                    names.append(f"{result[0]['first_name']}")
+                player = Player.query.get(player_id)
+                if player:
+                    names.append(player.first_name)
         players.append(names)
+
 
         # Convert datetime to ex. "July 1, 2025"
 
     for round_data in rounds:
-        date_str = round_data["date"]
+        date_str = round_data.date
         pretty_date = datetime.strptime(date_str, "%Y-%m-%d").strftime("%B %-d, %Y")
         date.append(pretty_date)
 
@@ -108,7 +112,7 @@ def index():
     # DISPLAY STATS ON HOMEPAGE
 
     # Get all rounds for this user
-    rounds = db.execute("SELECT * FROM rounds WHERE user_id = ?", session["user_id"])
+    rounds = Round.query.filter_by(user_id=session["user_id"]).all()
 
     albatrosses = eagles = birdies = pars = bogeys = double_bogeys = triple_bogeys = hole_in_one = 0
     total_18 = total_9 = total_front = total_back = best_18 = best_9 = best_front = best_back = 0
@@ -117,33 +121,29 @@ def index():
     rounds_9 = 0
 
     for round_data in rounds:
-        round_id = round_data["round_id"]
-        holes = round_data["holes"]
+        round_id = round_data.round_id
+        holes = round_data.holes
         rounds_played += 1
 
         # Get course
-        if round_data["course_18_id"]:
-            course = db.execute("SELECT * FROM courses_18 WHERE course_id = ?",
-                                round_data["course_18_id"])
+        if round_data.course_18_id:
+            course = Course18.query.get(round_data.course_18_id)
         else:
-            course = db.execute("SELECT * FROM courses_9 WHERE course_id = ?",
-                                round_data["course_9_id"])
+            course = Course9.query.get(round_data.course_9_id)
 
         # Get score
         if holes == 18:
-            score = db.execute(
-                "SELECT * FROM score_18 WHERE round_id = ? AND is_user = ?", round_id, 1)
+            score = Score18.query.filter_by(round_id=round_id, is_user=True).first()
         else:
-            score = db.execute(
-                "SELECT * FROM score_9 WHERE round_id = ? AND is_user = ?", round_id, 1)
+            score = Score9.query.filter_by(round_id=round_id, is_user=True).first()
 
         round_total = 0
 
         # Calculate stats
         for hole in range(1, holes + 1):
             if score and course:
-                s = score[0][f"hole_{hole}"]
-                p = course[0][f"par_{hole}"]
+                s = getattr(score, f"hole_{hole}")
+                p = getattr(course, f"par_{hole}")
                 round_total += s
 
             if s == p - 3:
@@ -166,23 +166,23 @@ def index():
         if holes == 18:
             total_18 += round_total
             rounds_18 += 1
-            total_front += score[0]["front"]
-            total_back += score[0]["back"]
+            total_front += score[0].front
+            total_back += score[0].back
             if best_18 == 0:
                 best_18 = round_total
             else:
                 if round_total < best_18:
                     best_18 = round_total
             if best_front == 0:
-                best_front = score[0]["front"]
+                best_front = score[0].front
             else:
-                if score[0]["front"] < best_front:
-                    best_front = score[0]["front"]
+                if score[0].front < best_front:
+                    best_front = score[0].front
             if best_back == 0:
-                best_back = score[0]["back"]
+                best_back = score[0].back
             else:
-                if score[0]["back"] < best_back:
-                    best_back = score[0]["back"]
+                if score[0].back < best_back:
+                    best_back = score[0].back
         else:
             total_9 += round_total
             rounds_9 += 1
@@ -199,25 +199,26 @@ def index():
 
     # Calculate handicap index based on 8 best rounds from 20 most recent
 
-    recent_20 = db.execute(
-        "SELECT * FROM rounds WHERE user_id = ? ORDER BY date DESC, round_id DESC LIMIT 20", session["user_id"])
+    recent_20 = Round.query.filter_by(user_id=session["user_id"]) \
+                .order_by(Round.date.desc(), Round.round_id.desc()) \
+                .limit(20).all()
 
     recent_scores = []
 
     for round_data in recent_20:
-        round_id = round_data["round_id"]
-        holes = round_data["holes"]
+        round_id = round_data.round_id
+        holes = round_data.holes
 
         if holes == 18:
-            score = db.execute(
-                "SELECT total FROM score_18 WHERE round_id = ? AND is_user = ?", round_id, 1)
-            total = score[0]["total"]
+            score = Score18.query.filter_by(round_id=round_id, is_user=True).first()
+            total = score.total if score else None
         else:
-            score = db.execute(
-                "SELECT total FROM score_9 WHERE round_id = ? AND is_user = ?", round_id, 1)
-            total = score[0]["total"] * 2
+            score = Score9.query.filter_by(round_id=round_id, is_user=True).first()
+            total = score.total * 2 if score else None
 
-        recent_scores.append(total)
+        if total is not None:
+            recent_scores.append(total)
+
 
     if recent_scores:
         best_8 = sorted(recent_scores)[:8]      # Handicap index formula provided by ChatGPT
@@ -263,8 +264,8 @@ def index():
 @app.route("/courses")
 @login_required
 def courses():
-
-    items = db.execute("SELECT * FROM courses_18 WHERE user_id = ?", session["user_id"])
+    
+    items = Course18.query.filter_by(user_id=session["user_id"]).all()
 
     return render_template("courses.html", items=items)
 
@@ -318,16 +319,18 @@ def new9():
         total = int(request.form.get("total"))
         course_holes = 9
 
-        db.execute("INSERT INTO courses_9 (name, user_id, total, course_holes) VALUES (?, ?, ?, ?)",
-                   name, user_id, total, course_holes)
+        # Create new course instance
+        course = Course9(name=name, user_id=user_id, total=total, course_holes=course_holes)
 
-        course_list = db.execute("SELECT course_id FROM courses_9 WHERE user_id = ?", user_id)
-
-        course_id = course_list[0]["course_id"]
-
+        # Set hole info dynamically for holes 1 through 9
         for i in range(1, 10):
-            db.execute(f"UPDATE courses_9 SET yards_{i} = ?, handicap_{i} = ?, par_{i} = ? WHERE course_id = ?", int(
-                request.form.get(f"yards_{i}")), int(request.form.get(f"handicap_{i}")), int(request.form.get(f"par_{i}")), course_id)
+            setattr(course, f'yards_{i}', int(request.form.get(f'yards_{i}')))
+            setattr(course, f'handicap_{i}', int(request.form.get(f'handicap_{i}')))
+            setattr(course, f'par_{i}', int(request.form.get(f'par_{i}')))
+
+        # Add and commit
+        db.session.add(course)
+        db.session.commit()
 
         return redirect("/")
 
@@ -388,13 +391,28 @@ def new18():
         total_yards = int(request.form.get("total_yards"))
         course_holes = 18
 
-        db.execute("INSERT INTO courses_18 (name, user_id, front, back, total, front_yards, back_yards, total_yards, course_holes) VALUES (?, ?, ?, ? , ?, ?, ?, ?, ?)",
-                   name, user_id, front_par, back_par, total_par, front_yards, back_yards, total_yards, course_holes)
-        course_id = db.execute("SELECT last_insert_rowid()")[0]["last_insert_rowid()"]
+        # Create course instance
+        course = Course18(
+            name=name,
+            user_id=user_id,
+            front=front_par,
+            back=back_par,
+            total=total_par,
+            front_yards=front_yards,
+            back_yards=back_yards,
+            total_yards=total_yards,
+            course_holes=course_holes
+        )
 
+        # Set hole-by-hole data dynamically
         for i in range(1, 19):
-            db.execute(f"UPDATE courses_18 SET yards_{i} = ?, handicap_{i} = ?, par_{i} = ? WHERE course_id = ?", int(
-                request.form.get(f"yards_{i}")), int(request.form.get(f"handicap_{i}")), int(request.form.get(f"par_{i}")), course_id)
+            setattr(course, f"yards_{i}", int(request.form.get(f"yards_{i}")))
+            setattr(course, f"handicap_{i}", int(request.form.get(f"handicap_{i}")))
+            setattr(course, f"par_{i}", int(request.form.get(f"par_{i}")))
+
+        # Add to DB and commit
+        db.session.add(course)
+        db.session.commit()
 
         return redirect("/")
 
@@ -436,23 +454,21 @@ def add_round():
         if players > 1:
             player_ids = json.loads(request.form.get("player_ids"))
 
-        course_list = db.execute(
-            "SELECT * FROM courses_18 WHERE name = ? AND user_id = ?", course, session["user_id"])
+        course_obj = Course18.query.filter_by(name=course, user_id=session["user_id"]).first()
 
-        if not course_list:
-            course_list = db.execute(
-                "SELECT * FROM courses_9 WHERE name = ? AND user_id = ?", course, session["user_id"])
+        if not course_obj:
+            course_obj = Course9.query.filter_by(name=course, user_id=session["user_id"]).first()
 
-            if not course_list:
+            if not course_obj:
                 return apology("Course does not exist", 400)
 
             else:
-                course_id = course_list[0]["course_id"]
-                course_holes = course_list[0]["course_holes"]
+                course_id = course_obj.course_id
+                course_holes = course_obj.course_holes
 
         else:
-            course_id = course_list[0]["course_id"]
-            course_holes = course_list[0]["course_holes"]
+            course_id = course_obj.course_id
+            course_holes = course_obj.course_holes
 
         # If a solo round, insert just the user_id, course_id, date, and holes into rounds table
 
@@ -460,234 +476,301 @@ def add_round():
 
         if players == 1 and course_holes == 18 and holes == 18:
 
-            db.execute("INSERT INTO rounds (course_18_id, user_id, date, holes) VALUES (?, ?, ?, ?)",
-                       course_id, session["user_id"], date, holes)
-            round_id = db.execute("SELECT last_insert_rowid()")[0]["last_insert_rowid()"]
+            # 1. Create new Round
+            round_obj = Round(
+                course_18_id=course_id,
+                user_id=session["user_id"],
+                date=date,
+                holes=holes
+            )
+            db.session.add(round_obj)
+            db.session.flush()  # Ensures round_obj.round_id is populated before committing
 
-            db.execute("INSERT INTO score_18 (round_id, user_id, is_user) VALUES (?, ?, ?)",
-                       round_id, session["user_id"], True)
-            score_id = db.execute("SELECT last_insert_rowid()")[0]["last_insert_rowid()"]
+            # 2. Create new Score18 record
+            score_obj = Score18(
+                round_id=round_obj.round_id,
+                user_id=session["user_id"],
+                is_user=True
+            )
+            db.session.add(score_obj)
 
+            # 3. Gather hole-by-hole scores
             front = 0
             back = 0
             total = 0
 
-            # Get score for each hole from form and calculate front, back, and total
-
-            for i in range(1, holes + 1):
+            for i in range(1, 19):  # holes == 18
                 score = int(request.form.get(f"player_0_score_{i}"))
-                if i < 10:
-                    front += score
-                    db.execute(f"UPDATE score_18 SET front = ? WHERE score_id = ?", front, score_id)
-                if i > 9 and holes < 19:
-                    back += score
-                    db.execute(f"UPDATE score_18 SET back = ? WHERE score_id = ?", back, score_id)
+                setattr(score_obj, f"hole_{i}", score)
                 total += score
+                if i <= 9:
+                    front += score
+                else:
+                    back += score
 
-                db.execute(
-                    f"UPDATE score_18 SET hole_{i} = ?, total = ? WHERE score_id = ?", score, total, score_id)
+            score_obj.front = front
+            score_obj.back = back
+            score_obj.total = total
+
+            # 4. Commit everything
+            db.session.commit()
+
+            # Optionally get score_id and round_id after commit
+            score_id = score_obj.score_id
+            round_id = round_obj.round_id
 
                 # 1 player, 9 hole round
 
         elif players == 1 and course_holes == 18 and holes == 9:
 
-            db.execute("INSERT INTO rounds (course_18_id, user_id, date, holes) VALUES (?, ?, ?, ?)",
-                       course_id, session["user_id"], date, holes)
-            round_id = db.execute("SELECT last_insert_rowid()")[0]["last_insert_rowid()"]
+            # 1. Create new Round
+            round_obj = Round(
+                course_18_id=course_id,
+                user_id=session["user_id"],
+                date=date,
+                holes=holes
+            )
+            db.session.add(round_obj)
+            db.session.flush()  # Ensures round_obj.round_id is populated before committing
 
-            db.execute("INSERT INTO score_9 (round_id, user_id, is_user) VALUES (?, ?, ?)",
-                       round_id, session["user_id"], True)
-            score_id = db.execute("SELECT last_insert_rowid()")[0]["last_insert_rowid()"]
+            # 2. Create new Score9 record
+            score_obj = Score9(
+                round_id=round_obj.round_id,
+                user_id=session["user_id"],
+                is_user=True
+            )
+            db.session.add(score_obj)
 
             total = 0
 
-            for i in range(1, holes + 1):
+            for i in range(1, 10):  # holes == 9
                 score = int(request.form.get(f"player_0_score_{i}"))
+                setattr(score_obj, f"hole_{i}", score)
                 total += score
-                db.execute(
-                    f"UPDATE score_9 SET hole_{i} = ?, total = ? WHERE score_id = ?", score, total, score_id)
+                
+            score_obj.total = total
+
+            # 4. Commit everything
+            db.session.commit()
 
             # 1 player, 9 hole course
             # 9 HOLE COURSES NOT CURRENTLY USED BUT CODE IS LEFT FOR FUTURE USE
 
         elif players == 1 and course_holes == 9:
 
-            db.execute("INSERT INTO rounds (course_9_id, user_id, date, holes) VALUES (?, ?, ?, ?)",
-                       course_id, session["user_id"], date, holes)
-            round_id = db.execute("SELECT last_insert_rowid()")[0]["last_insert_rowid()"]
+            # 1. Create new Round
+            round_obj = Round(
+                course_9_id=course_id,
+                user_id=session["user_id"],
+                date=date,
+                holes=holes
+            )
+            db.session.add(round_obj)
+            db.session.flush()  # Ensures round_obj.round_id is populated before committing
 
-            db.execute("INSERT INTO score_9 (round_id, user_id, is_user) VALUES (?, ?, ?)",
-                       round_id, session["user_id"], True)
-            score_id = db.execute("SELECT last_insert_rowid()")[0]["last_insert_rowid()"]
+            # 2. Create new Score9 record
+            score_obj = Score9(
+                round_id=round_obj.round_id,
+                user_id=session["user_id"],
+                is_user=True
+            )
+            db.session.add(score_obj)
 
             total = 0
 
-            for i in range(1, holes + 1):
+            for i in range(1, 10):  # holes == 9
                 score = int(request.form.get(f"player_0_score_{i}"))
+                setattr(score_obj, f"hole_{i}", score)
                 total += score
-                db.execute(
-                    f"UPDATE score_9 SET hole_{i} = ?, total = ? WHERE score_id = ?", score, total, score_id)
+                
+            score_obj.total = total
 
+            # 4. Commit everything
+            db.session.commit()
+            
         elif players > 4:
             return apology("Too many players", 400)
 
         # If more than one player, add players ids as well
         else:
 
-            if course_holes == 18:
-                db.execute("INSERT INTO rounds (course_18_id, user_id, date, holes) VALUES (?, ?, ?, ?)",
-                           course_id, session["user_id"], date, holes)
+            
+            # Create Round object (support both 18 and 9 holes)
+            round_obj = Round(
+                course_18_id=course_id if course_holes == 18 else None,
+                course_9_id=course_id if course_holes == 9 else None,
+                user_id=session["user_id"],
+                date=date,
+                holes=holes
+            )
+            db.session.add(round_obj)
+            db.session.flush()  # Populate round_obj.round_id before continuing
 
-                # 9 HOLE COURSES NOT CURRENTLY USED, LEFT FOR FUTURE USE
-
-            elif course_holes == 9:
-                db.execute("INSERT INTO rounds (course_9_id, user_id, date, holes) VALUES (?, ?, ?, ?)",
-                           course_id, session["user_id"], date, holes)
-
-            round_id = db.execute("SELECT last_insert_rowid()")[0]["last_insert_rowid()"]
-
-            for i in range(1, players):
+            # Add player IDs (player_id_1, player_id_2, etc.)
+            for i in range(1, players):  # Skip index 0 (user)
                 player_id = player_ids[i - 1]
                 if not player_id:
                     return apology(f"Must select player {i}", 400)
-                db.execute(
-                    f"UPDATE rounds SET player_id_{i} = ? WHERE round_id = ?", player_id, round_id)
+
+                # Dynamically set player_id_1, player_id_2, etc.
+                setattr(round_obj, f"player_id_{i}", player_id)
+
+            db.session.commit()
+            round_id = round_obj.round_id
+
 
             # MULTIPLE PLAYERS, 18 HOLE ROUND
 
             if holes == 18:
-
-                # Record user's scores
-
-                db.execute("INSERT INTO score_18 (round_id, user_id, is_user) VALUES (?, ?, ?)",
-                           round_id, session["user_id"], True)
-                score_id = db.execute("SELECT last_insert_rowid()")[0]["last_insert_rowid()"]
+                # Record user's score
+                user_score = Score18(
+                    round_id=round_id,
+                    user_id=session["user_id"],
+                    is_user=True
+                )
 
                 front = 0
                 back = 0
                 total = 0
 
-                for i in range(1, holes + 1):
+                for i in range(1, 19):  # holes = 18
                     score = int(request.form.get(f"player_0_score_{i}"))
-                    if i < 10:
-                        front += score
-                        db.execute(f"UPDATE score_18 SET front = ? WHERE score_id = ?",
-                                   front, score_id)
-                    elif i > 9 and holes < 19:
-                        back += score
-                        db.execute(f"UPDATE score_18 SET back = ? WHERE score_id = ?", back, score_id)
+                    setattr(user_score, f"hole_{i}", score)
                     total += score
-                    db.execute(
-                        f"UPDATE score_18 SET hole_{i} = ?, total = ? WHERE score_id = ?", score, total, score_id)
+                    if i <= 9:
+                        front += score
+                    else:
+                        back += score
 
-                # Record player scores
+                user_score.front = front
+                user_score.back = back
+                user_score.total = total
+
+                db.session.add(user_score)
+
+                # Record other players' scores
                 if players > 1:
-
-                    # Insert initial information into score_18 and then retrieve score_id
                     for player in range(1, players):
                         player_id = player_ids[player - 1]
-                        db.execute("INSERT INTO score_18 (round_id, user_id, player_id) VALUES (?, ?, ?)",
-                                   round_id, session["user_id"], player_id)
-                        score_id = db.execute("SELECT last_insert_rowid()")[
-                            0]["last_insert_rowid()"]
+                        player_score = Score18(
+                            round_id=round_id,
+                            user_id=session["user_id"],
+                            player_id=player_id,
+                            is_user=False
+                        )
 
                         front = 0
                         back = 0
                         total = 0
 
-                        # Update player scores from round, calculate front, back, and total
-                        for hole in range(1, holes + 1):
+                        for hole in range(1, 19):
                             score = int(request.form.get(f"player_{player}_score_{hole}"))
-                            if hole < 10:
-                                front += score
-                                db.execute(
-                                    f"UPDATE score_18 SET front = ? WHERE score_id = ?", front, score_id)
-                            if hole > 9 and holes < 19:
-                                back += score
-                                db.execute(
-                                    f"UPDATE score_18 SET back = ? WHERE score_id = ?", back, score_id)
+                            setattr(player_score, f"hole_{hole}", score)
                             total += score
-                            db.execute(
-                                f"UPDATE score_18 SET hole_{hole} = ?, total = ? WHERE score_id = ?", score, total, score_id)
+                            if hole <= 9:
+                                front += score
+                            else:
+                                back += score
+
+                        player_score.front = front
+                        player_score.back = back
+                        player_score.total = total
+
+                        db.session.add(player_score)
+
+                # Commit all at once
+                db.session.commit()
+
             else:
                 # 9 hole round. Record user's scores
 
-                db.execute("INSERT INTO score_9 (round_id, user_id, is_user) VALUES (?, ?, ?)",
-                           round_id, session["user_id"], True)
-                score_id = db.execute("SELECT last_insert_rowid()")[0]["last_insert_rowid()"]
+                if holes == 9:
+                    # Record user's 9-hole score
+                    user_score = Score9(
+                        round_id=round_id,
+                        user_id=session["user_id"],
+                        is_user=True
+                    )
 
-                total = 0
+                    total = 0
 
-                for i in range(1, holes + 1):
-                    score = int(request.form.get(f"player_0_score_{i}"))
-                    total += score
-                    db.execute(
-                        f"UPDATE score_9 SET hole_{i} = ?, total = ? WHERE score_id = ?", score, total, score_id)
+                    for i in range(1, 10):
+                        score = int(request.form.get(f"player_0_score_{i}"))
+                        setattr(user_score, f"hole_{i}", score)
+                        total += score
 
-                # Record player scores
-                if players > 1:
+                    user_score.total = total
+                    db.session.add(user_score)
 
-                    # Insert initial information into score_18 and then retrieve score_id
-                    for player in range(1, players):
-                        player_id = player_ids[player - 1]
-                        db.execute("INSERT INTO score_9 (round_id, user_id, player_id) VALUES (?, ?, ?)",
-                                   round_id, session["user_id"], player_id)
-                        score_id = db.execute("SELECT last_insert_rowid()")[
-                            0]["last_insert_rowid()"]
-                        total = 0
+                    # Record other players’ scores
+                    if players > 1:
+                        for player in range(1, players):
+                            player_id = player_ids[player - 1]
 
-                        # Update player scores from round, calculate total
-                        for hole in range(1, holes + 1):
-                            score = int(request.form.get(f"player_{player}_score_{hole}"))
-                            total += score
-                            db.execute(
-                                f"UPDATE score_9 SET hole_{hole} = ?, total = ? WHERE score_id = ?", score, total, score_id)
+                            player_score = Score9(
+                                round_id=round_id,
+                                user_id=session["user_id"],  # scorer's ID (not the player's)
+                                player_id=player_id,
+                                is_user=False
+                            )
+
+                            total = 0
+                            for hole in range(1, 10):
+                                score = int(request.form.get(f"player_{player}_score_{hole}"))
+                                setattr(player_score, f"hole_{hole}", score)
+                                total += score
+
+                            player_score.total = total
+                            db.session.add(player_score)
+
+                    db.session.commit()
 
         return redirect("/")
 
     else:
-        # If request = GET retreive the players and holes from new_round_players
+        # GET request: retrieve number of players and holes
         players = request.args.get("players", type=int)
         holes = request.args.get("holes", type=int)
 
-        # If more than one player, get the player ids
+        # Get player IDs if multiplayer
         if players > 1:
             player_ids = request.args.get("player_ids")
             if not player_ids:
                 return apology("No players selected", 400)
-            player_ids = json.loads(unquote(player_ids))  # JSON SOLUTION PROVIDED BY CHATGPT
+            player_ids = json.loads(unquote(player_ids))  # JSON decoded player list
 
-        # Retrieve courses
+        # Retrieve 18- and 9-hole courses for this user
+        course_18 = Course18.query.filter_by(user_id=session["user_id"]).all()
+        course_9 = Course9.query.filter_by(user_id=session["user_id"]).all()
 
-        course_18 = db.execute("SELECT * FROM courses_18 WHERE user_id = ?", session["user_id"])
-        course_9 = db.execute("SELECT * FROM courses_9 WHERE user_id = ?", session["user_id"])
+        # Get user's nickname from users table
+        user = User.query.get(session["user_id"])
+        if not user:
+            return apology("User not found", 400)
 
-        # Retrieve player names
+        # Build player_names list with user's nickname
+        player_names = [user.nickname]
 
-        name_list = db.execute("SELECT * FROM users WHERE id = ?", session["user_id"])
-
-        # Get user's nickname
-        name = name_list[0]["nickname"]
-
-        # Add user's nickname as the first name in player_names list
-        player_names = []
-        player_names.append(name)
-
-        # If multiple players, add their first names to the player_names list
+        # Add other player names if multiplayer
         if players > 1:
             for player_id in player_ids:
-                player = db.execute(
-                    "SELECT first_name FROM players WHERE player_id = ? AND user_id = ?", player_id, session["user_id"])
+                player = Player.query.filter_by(player_id=player_id, user_id=session["user_id"]).first()
                 if player:
-                    player_names.append(f"{player[0]['first_name']}")
+                    player_names.append(player.first_name)
                 else:
                     return apology("Player not found", 400)
 
-        if players == 1:
-            return render_template("add_round.html", player_names=player_names, players=players, holes=holes, course_18=course_18, course_9=course_9)
+        # Render template
+        return render_template(
+            "add_round.html",
+            player_names=player_names,
+            player_ids=player_ids if players > 1 else None,
+            players=players,
+            holes=holes,
+            course_18=course_18,
+            course_9=course_9
+        )
 
-        else:
-            return render_template("add_round.html", player_names=player_names, player_ids=player_ids, players=players, holes=holes, course_18=course_18, course_9=course_9)
 
 # LIST USER'S ROUNDS
 
@@ -697,61 +780,56 @@ def add_round():
 def my_rounds():
 
     # Get user's nickname
-    user_name = db.execute("SELECT nickname FROM users WHERE id = ?", session["user_id"])
-    name = user_name[0]["nickname"]
+    user = User.query.get(session["user_id"])
+    if not user:
+        return apology("User not found", 400)
+    name = user.nickname
 
-    rounds = db.execute(
-        "SELECT * FROM rounds WHERE user_id = ? ORDER BY date DESC, round_id DESC", session["user_id"])
+    # Get all rounds for the user, ordered by most recent
+    rounds = Round.query.filter_by(user_id=session["user_id"]) \
+        .order_by(Round.date.desc(), Round.round_id.desc()).all()
 
     scores = []
     players = []
     courses = []
-    combined = []
     dates = []
 
-    for i in range(len(rounds)):
-
-        # Get either score_18 or score_9 depending on number of holes
-        if rounds[i]["holes"] == 18:
-            scores.append(db.execute(
-                "SELECT * FROM score_18 WHERE round_id = ?", rounds[i]["round_id"]))
+    for round_obj in rounds:
+        # Get score record
+        if round_obj.holes == 18:
+            score = Score18.query.filter_by(round_id=round_obj.round_id).all()
         else:
-            scores.append(db.execute(
-                "SELECT * FROM score_9 WHERE round_id = ?", rounds[i]["round_id"]))
+            score = Score9.query.filter_by(round_id=round_obj.round_id).all()
+        scores.append(score)
 
-        # 9 HOLE COURSES NOT CURRENTLY USED, CODE LEFT FOR FUTURE USE
-        if rounds[i]["course_18_id"]:
-            result = db.execute("SELECT * FROM courses_18 WHERE course_id = ?",
-                                rounds[i]["course_18_id"])
-            courses.append(result[0] if result else None)
+        # Get course info
+        if round_obj.course_18_id:
+            course = Course18.query.filter_by(course_id=round_obj.course_18_id).first()
         else:
-            result = db.execute("SELECT * FROM courses_9 WHERE course_id = ?",
-                                rounds[i]["course_9_id"])
-            courses.append(result[0] if result else None)
+            course = Course9.query.filter_by(course_id=round_obj.course_9_id).first()
+        courses.append(course)
 
-    for round_data in rounds:
+        # Get player names
         names = []
         for key in ["player_id_1", "player_id_2", "player_id_3"]:
-            player_id = round_data.get(key)
-            # IF DECIDING TO USE INTITALS FOR 4 PLAYER ROUNDS, NEED TO APPEND LAST NAME
+            player_id = getattr(round_obj, key)
             if player_id:
-                result = db.execute(
-                    "SELECT first_name, last_name FROM players WHERE player_id = ?", player_id)
-                if result:
-                    names.append(f"{result[0]['first_name']}")
+                player = Player.query.filter_by(player_id=player_id).first()
+                if player:
+                    names.append(player.first_name)
         players.append(names)
 
-    # Change from datetime to ex. "July 1, 2025
-    for round_data in rounds:
-        date_str = round_data["date"]
-        pretty_date = datetime.strptime(date_str, "%Y-%m-%d").strftime("%B %-d, %Y")
+        # Format date
+        pretty_date = round_obj.date.strftime("%B %-d, %Y")
         dates.append(pretty_date)
 
-    combined = zip(rounds, scores, courses, players, dates)  # ZIP SOLUTION PROVIDED BY CHATGPT
+    # Combine everything
+    combined = zip(rounds, scores, courses, players, dates)
 
     return render_template("my_rounds.html", name=name, combined=combined)
 
-    # rounds=rounds, scores=scores, courses=courses, players=players)
+
+
 
 
 # FILL OUT NEW ROUND INFORMATION (NUMBER OF PLAYERS AND HOLES)
@@ -822,7 +900,7 @@ def new_round_players():
 
         players = request.args.get("players", type=int)
         holes = request.args.get("holes", type=int)
-        player_names = db.execute("SELECT * FROM players WHERE user_id = ?", session["user_id"])
+        player_names = Player.query.filter_by(user_id=session["user_id"]).all()
 
         return render_template("new_round_players.html", players=players, holes=holes, player_names=player_names)
 
@@ -852,8 +930,19 @@ def add_players():
 
         # Add player information to players table
         for i in range(1, players):
-            db.execute("INSERT INTO players (first_name, last_name, user_id) VALUES (?, ?, ?)", request.form.get(
-                f"first_name_{i}"), request.form.get(f"last_name_{i}"), session["user_id"])
+            first_name = request.form.get(f"first_name_{i}")
+            last_name = request.form.get(f"last_name_{i}")
+
+            player = Player(
+                first_name=first_name,
+                last_name=last_name,
+                user_id=session["user_id"]
+            )
+
+            db.session.add(player)
+
+        db.session.commit()
+
 
         return redirect("/players")
 
@@ -894,51 +983,51 @@ def number_players():
 @login_required
 def players():
 
-    players = db.execute("SELECT * FROM players WHERE user_id = ?", session["user_id"])
+    # TODO Split average score into averages for 18 and 9 hole rounds
 
-    # DISPLAY STATS Of PLAYERS
+    # Get all players for current user
+    players = Player.query.filter_by(user_id=session["user_id"]).all()
 
     # Get all rounds for this user
-    rounds = db.execute("SELECT * FROM rounds WHERE user_id = ?", session["user_id"])
+    rounds = Round.query.filter_by(user_id=session["user_id"]).all()
 
     for player in players:
-
         birdies = pars = bogeys = eagles = double_bogeys = triple_bogeys = holes_in_one = total_score = 0
         rounds_played = 0
         average_score = 0
 
         for round_data in rounds:
-            round_id = round_data["round_id"]
-            holes = round_data["holes"]
-            player_id = player["player_id"]
+            round_id = round_data.round_id
+            holes = round_data.holes
+            player_id = player.player_id
 
-            # Get course
-            if round_data["course_18_id"]:
-                course = db.execute("SELECT * FROM courses_18 WHERE course_id = ?",
-                                    round_data["course_18_id"])
-            # 9 HOLE COURSES NOT CURRENTLY USED, CODE LEFT FOR FUTURE USE
+            # Get course — optional, depending on if you need course data for stats
+            if round_data.course_18_id:
+                course = Course18.query.get(round_data.course_18_id)
             else:
-                course = db.execute("SELECT * FROM courses_9 WHERE course_id = ?",
-                                    round_data["course_9_id"])
+                course = Course9.query.get(round_data.course_9_id)
 
-            # Get score
+            # Get player's score for this round
             if holes == 18:
-                score = db.execute(
-                    "SELECT * FROM score_18 WHERE round_id = ? AND player_id = ?", round_id, player_id)
+                score = Score18.query.filter_by(round_id=round_id, player_id=player_id).first()
             else:
-                score = db.execute(
-                    "SELECT * FROM score_9 WHERE round_id = ? AND player_id = ?", round_id, player_id)
+                score = Score9.query.filter_by(round_id=round_id, player_id=player_id).first()
 
-            # Calculate birdies, pars, etc
-            if score:
+            if not score:
+                continue
+
+            if score and course:
                 rounds_played += 1
                 round_total = 0
 
                 for hole in range(1, holes + 1):
-                    if score and course:
-                        s = score[0][f"hole_{hole}"]
-                        p = course[0][f"par_{hole}"]
-                        round_total += s
+                    s = getattr(score, f"hole_{hole}")
+                    p = getattr(course, f"par_{hole}")
+
+                    if s is None or p is None:
+                        continue  # skip if score or par is missing
+
+                    round_total += s
 
                     if s == p - 1:
                         birdies += 1
@@ -952,53 +1041,74 @@ def players():
                         double_bogeys += 1
                     elif s == p + 3:
                         triple_bogeys += 1
-                    elif s == 1:
+                    if s == 1:
                         holes_in_one += 1
 
                 if holes == 18:
                     total_score += round_total
                 else:
-                    total_score += (round_total * 2)
+                    total_score += round_total * 2  # Multiply 9 hole total by 2 to approximate an 18 hole rounds
 
         # Calculate average score
-        # TODO Split average score into averages for 18 and 9 hole rounds
 
         average_score = round(total_score / rounds_played) if rounds_played else None
 
         # Calculate the player's handicap index based on best 8 rounds in most recent 20 rounds
-        recent_20 = db.execute(
-            "SELECT * FROM rounds WHERE player_id_1 = ? OR player_id_2 = ? or player_id_3 = ? ORDER BY date DESC, round_id DESC LIMIT 20", player_id, player_id, player_id)
+        # Step 1: Get the 20 most recent rounds the player played in
+        recent_20 = (
+            Round.query
+            .filter(
+                (Round.player_id_1 == player_id) |
+                (Round.player_id_2 == player_id) |
+                (Round.player_id_3 == player_id)
+            )
+            .order_by(Round.date.desc(), Round.round_id.desc())
+            .limit(20)
+            .all()
+        )
 
         recent_scores = []
 
         for round_data in recent_20:
-            round_id = round_data["round_id"]
-            holes = round_data["holes"]
+            round_id = round_data.round_id
+            holes = round_data.holes
 
             if holes == 18:
-                score = db.execute(
-                    "SELECT total FROM score_18 WHERE round_id = ? AND player_id = ?", round_id, player_id)
-                total = score[0]["total"]
+                score = Score18.query.filter_by(round_id=round_id, player_id=player_id).first()
+                if score:
+                    total = score.total
             else:
-                score = db.execute(
-                    "SELECT total FROM score_9 WHERE round_id = ? AND player_id = ?", round_id, player_id)
-                # Multiply 9 hole total by 2 to approximate an 18 hole rounds
-                total = score[0]["total"] * 2
+                score = Score9.query.filter_by(round_id=round_id, player_id=player_id).first()
+                if score:
+                    total = score.total * 2  # approximate 18-hole round
 
-            recent_scores.append(total)
+            if score and total:
+                recent_scores.append(total)
 
+        # Step 2: Calculate handicap index
         if recent_scores:
-            best_8 = sorted(recent_scores)[:8]      # Handicap index formula provided by ChatGPT
+            best_8 = sorted(recent_scores)[:8]
             avg_best_8 = sum(best_8) / len(best_8)
-            handicap_index = round((avg_best_8 - 72) * 0.96, 1)  # Assuming course rating is 72
+            handicap_index = round((avg_best_8 - 72) * 0.96, 1)  # Assuming course rating = 72
         else:
             handicap_index = None
 
-        db.execute("UPDATE players SET rounds_played = ?, average_score = ?, birdies = ?, pars = ?, bogeys = ?, handicap = ?, eagles = ?, double_bogeys = ?, triple_bogeys = ?, holes_in_one = ? WHERE player_id = ?",
-                   rounds_played, average_score, birdies, pars, bogeys, handicap_index, eagles, double_bogeys, triple_bogeys, holes_in_one, player_id)
+        # Step 3: Update player with calculated stats
+        player.rounds_played = rounds_played
+        player.average_score = average_score if rounds_played else 0
+        player.birdies = birdies
+        player.pars = pars
+        player.bogeys = bogeys
+        player.eagles = eagles
+        player.double_bogeys = double_bogeys
+        player.triple_bogeys = triple_bogeys
+        player.holes_in_one = holes_in_one
+        player.handicap = handicap_index
 
-        players = db.execute(
-            "SELECT * FROM players WHERE user_id = ? ORDER BY rounds_played DESC", session["user_id"])
+        db.session.commit()
+
+        # Step 4: Re-query players if needed for display
+        players = Player.query.filter_by(user_id=session["user_id"]).order_by(Player.rounds_played.desc()).all()
 
     return render_template("players.html", players=players)
 
@@ -1024,21 +1134,17 @@ def login():
 
         # Ensure password was submitted
         elif not request.form.get("password"):
-            return apology("must provide password", 403)
+            return apology("must provide password", 403)       
 
-        # Query database for username
-        rows = db.execute(
-            "SELECT * FROM users WHERE username = ?", request.form.get("username")
-        )
+        # Query database for user
+        user = User.query.filter_by(username=request.form.get("username")).first()
 
         # Ensure username exists and password is correct
-        if len(rows) != 1 or not check_password_hash(
-            rows[0]["hash"], request.form.get("password")
-        ):
+        if not user or not check_password_hash(user.hash, request.form.get("password")):
             return apology("invalid username and/or password", 403)
 
         # Remember which user has logged in
-        session["user_id"] = rows[0]["id"]
+        session["user_id"] = user.id
 
         # Redirect user to home page
         return redirect("/")
@@ -1085,35 +1191,34 @@ def register():
         elif not request.form.get("confirmation"):
             return apology("must confirm password", 400)
 
-        nickname = request.form.get("nickname")
-
         # Check if username already exists
 
         new_username = request.form.get("username")
-
-        check_username_list = db.execute(
-            "SELECT username FROM users WHERE username = ?", new_username)
-
-        # Return apology if username already exists
-
-        if check_username_list:
-            return apology("Username already exists", 400)
-
+        nickname = request.form.get("nickname")  # assuming you collect this too
         password = request.form.get("password")
-
         confirm_password = request.form.get("confirmation")
 
-        # Return apology if password and confirm password doesn't match
+        # Check if username already exists
+        existing_user = User.query.filter_by(username=new_username).first()
+        if existing_user:
+            return apology("Username already exists", 400)
+
+        # Check password confirmation
         if password != confirm_password:
             return apology("Passwords do not match", 400)
 
+        # Hash password
         hash = generate_password_hash(password)
 
-        try:
-            db.execute("INSERT INTO users (username, hash, nickname) VALUES (?, ?, ?)",
-                       new_username, hash, nickname)
+        # Create new user instance
+        user = User(username=new_username, hash=hash, nickname=nickname)
 
-        except:
+        # Add and commit to DB
+        db.session.add(user)
+        try:
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
             return apology("Username already exists", 400)
 
         return redirect("/")
