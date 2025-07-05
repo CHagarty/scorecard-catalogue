@@ -1,7 +1,7 @@
 # Scorecard Catalogue
 #### Video Demo:  <URL https://youtu.be/iebnCEmV5l8?si=LsjTMclVCX5dT88P>
 #### Description:
-Scorecard Catalogue is my final project for CS50. It is a flask based web application.
+Scorecard Catalogue is my final project for CS50*. It is a flask based web application.
 
 The purpose of Scorecard Catalogue is to function as a digital collection of golf scorecards. Additionally, it automatically calculates and stores stats as rounds are completed. The goal is to let the user move away from physical, disposable golf scorecards, allowing them to enter their scores and their playing partners scores as the round progresses as you would do with a traditional scorecard. Once the round is complete, they must simply click “add round” and a scorecard of their round is created.
 
@@ -122,5 +122,8 @@ They are then redirected to add_players.
 Here, two text boxes are generated for each additional player being added. The first is for the new player’s first name, and the second is for their last name.
 
 When submitted, the user is redirected to /players.
+
+
+* This was originally built in the CS50 IDE using CS50 SQL. ChatGPT was used to help switch it to use SQLAlchemy so that PostgreSQL could be used with the live site.
 
 
