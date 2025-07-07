@@ -784,7 +784,7 @@
                 {% endif %}
 
             {% else %}
-                {% set over = latest_score.total - average %}
+                {% set over = latest_score - average %}
 
                 {% if over < 5 %}
                     <h2>You shot {{ over | round(1) }} more than average.</h2>
