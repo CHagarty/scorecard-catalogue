@@ -25,13 +25,10 @@ Session(app)
 
 # Configure to use SQLAlchemy
 
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://scorecarddb_9tja_user:L32XBwANBfEumGTphuSrXb8NXzOPhelO@dpg-d1ko6d6r433s73cs1jig-a.oregon-postgres.render.com/scorecarddb_9tja"
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://scorecarddb_wdu7_user:ZDmoeidlKgUr7k68ldDPO9Y38Dw7ZMXO@dpg-d1m1fundiees738vlc00-a.ohio-postgres.render.com/scorecarddb_wdu7"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db.init_app(app)
-
-
-
 
 
 @app.after_request
@@ -68,6 +65,7 @@ def index():
     combined = []
     date = []
     recent_holes = round_data.holes if round_data else 0
+    latest_score = 0
 
     # Get scores for the latest round
 
