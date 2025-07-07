@@ -21,11 +21,11 @@
     <h2 class="latest-h1">Here's Your Latest Round:</h2>
 
     <div class="latest-round">
-        {% for rounds, scores, courses, players, date in combined %}
+        {% for round_data, scores, courses, players, date in combined %}
 
     <!-- 18 hole round -->
 
-            {% if rounds.holes == 18 %}
+            {% if round_data.holes == 18 %}
     <!-- Desktop 18 Hole Scorecard-->
                 <div class="table-container desktop-scorecard">
                     <table class="table-bordered">
@@ -462,7 +462,7 @@
 
     <!-- 9 hole round -->
 
-            {% if rounds.holes == 9 %}
+            {% if round_data.holes == 9 %}
 
     <!-- Desktop 9 Hole Round -->
 
@@ -726,7 +726,7 @@
         <div class="message-ball">
             <div>
                 <div class="stat-label">Last Score</div>
-                <div class="stat-value">{{ latest_score.total }}</div>
+                <div class="stat-value">{{ latest_score }}</div>
             </div>
         </div>
         <div class="message-ball">
@@ -740,55 +740,68 @@
                     <div class="stat-label">Average Score</div>
                     <div class="stat-value">{{ stats.average_9 }}</div>
                 {% endif %}
+
+                {% if recent_holes == 0 %}
+                    <div class="stat-label">Average Score</div>
+                    <div class="stat-value">{{ recent_holes }}</div>
+                {% endif %}
             </div>
         </div>
     </div>
     <div class="round-message-box">
 
-        {% set average = stats.average_18 if recent_holes == 18 else stats.average_9 %}
-        {% set difference = average - latest_score.total %}
-
-        {% if difference >= 0 %}
-
-            {% if difference > 9 %}
-                <h3>You shot {{ difference | round(1) }} less than average.</h3>
-                <h3>Liar</h3>
-
-            {% elif difference > 5 %}
-                <h3>You shot {{ difference | round(1) }} less than average.</h3>
-                <h3>You're getting pretty good at cheating. Keep it up.</h3>
-
-            {% elif difference == 5 %}
-                <h3>You shot {{ difference }} less than average.</h3>
-                <h3>Everybody's really impressed.</h3>
-
-            {% elif difference > 0 %}
-                <h3>You shot {{ difference | round(1) }} less than average.</h3>
-                <h3>You don't suck! Bet you've never heard that before.</h3>
-
-            {% elif difference == 0 %}
-                <h3>You shot your average score.</h3>
-                <h3>Bet that's not the only way you're average.</h3>
-            {% endif %}
-
+        {% if recent_holes == 0 %}
+            <h2>Go for it, add a round.</h2>
+            <h3>Coward.</h3>
+        
         {% else %}
-            {% set over = latest_score.total - average %}
+        
+            {% set average = stats.average_18 if recent_holes == 18 else stats.average_9 %}
+            {% set difference = average - latest_score %}
 
-            {% if over < 5 %}
-                <h3>You shot {{ over | round(1) }} more than average.</h3>
-                <h3>At least you're honest.</h3>
+            
+            {% if difference >= 0 %}
 
-            {% elif over < 10 %}
-                <h3>You shot {{ over | round(1) }} more than average.</h3>
-                <h3>You suck!</h3>
+                {% if difference > 9 %}
+                    <h2>You shot {{ difference | round(1) }} less than average.</h2>
+                    <h3>Liar</h3>
 
-            {% elif over < 15 %}
-                <h3>You shot {{ over | round(1) }} more than average.</h3>
-                <h3>If you're having thoughts of suicide, call 9-8-8.</h3>
+                {% elif difference > 5 %}
+                    <h2>You shot {{ difference | round(1) }} less than average.</h2>
+                    <h3>You're getting pretty good at cheating. Keep it up.</h3>
+
+                {% elif difference == 5 %}
+                    <h2>You shot {{ difference }} less than average.</h2>
+                    <h3>Everybody's really impressed.</h3>
+
+                {% elif difference > 0 %}
+                    <h2>You shot {{ difference | round(1) }} less than average.</h2>
+                    <h3>You don't suck! Bet you've never heard that before.</h3>
+
+                {% elif difference == 0 %}
+                    <h2>You shot your average score.</h2>
+                    <h3>Bet that's not the only way you're average.</h3>
+                {% endif %}
 
             {% else %}
-                <h3>Oh my god, you shot {{ over | round(1) }} more than average.</h3>
-                <h3>Don't even bother calling 9-8-8, just do it.</h3>
+                {% set over = latest_score.total - average %}
+
+                {% if over < 5 %}
+                    <h2>You shot {{ over | round(1) }} more than average.</h2>
+                    <h3>At least you're honest.</h3>
+
+                {% elif over < 10 %}
+                    <h2>You shot {{ over | round(1) }} more than average.</h2>
+                    <h3>You suck!</h3>
+
+                {% elif over < 15 %}
+                    <h2>You shot {{ over | round(1) }} more than average.</h2>
+                    <h3>If you're having thoughts of suicide, call 9-8-8.</h3>
+
+                {% else %}
+                    <h2>Oh my god, you shot {{ over | round(1) }} more than average.</h2>
+                    <h3>Don't even bother calling 9-8-8, just do it.</h3>
+                {% endif %}
             {% endif %}
         {% endif %}
 

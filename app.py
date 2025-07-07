@@ -10,7 +10,7 @@ from urllib.parse import quote, unquote
 
 from helpers import apology, login_required
 from datetime import datetime
-from models import Course18, Course9, Score18, Score9, Round, Player, User 
+from models import db, Course18, Course9, Score18, Score9, Round, Player, User 
 
 # Configure application
 app = Flask(__name__)
@@ -24,11 +24,14 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 # Configure to use SQLAlchemy
-app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(" ")  or "slqite:///project.db" # This should be set in Render or locally
+
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://scorecarddb_9tja_user:L32XBwANBfEumGTphuSrXb8NXzOPhelO@dpg-d1ko6d6r433s73cs1jig-a.oregon-postgres.render.com/scorecarddb_9tja"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-# Initialize the database
-db = SQLAlchemy(app)
+db.init_app(app)
+
+
+
 
 
 @app.after_request
@@ -55,42 +58,44 @@ def index():
 
     # DISPLAY MOST RECENT ROUND
 
-    rounds = Round.query.filter_by(user_id=session["user_id"]) \
+    round_data = Round.query.filter_by(user_id=session["user_id"]) \
             .order_by(Round.date.desc(), Round.round_id.desc()) \
-            .limit(1).all()
+            .first()
 
     scores = []
     players = []
     courses = []
     combined = []
     date = []
-    recent_holes = rounds[0].holes
+    recent_holes = round_data.holes if round_data else 0
 
     # Get scores for the latest round
 
-    for i in range(len(rounds)):
+    if round_data:
 
-        if rounds[i].holes == 18:
-            score_list = Score18.query.filter_by(round_id=rounds[i].round_id).all()
+        if round_data.holes == 18:
+            score_list = Score18.query.filter_by(round_id=round_data.round_id).all()
             scores.append(score_list)
+            latest_score = score_list[0].total if score_list else 0
             
         else:
-            score_list = Score9.query.filter_by(round_id=rounds[i].round_id).all()
+            score_list = Score9.query.filter_by(round_id=round_data.round_id).all()
             scores.append(score_list)
+            latest_score = score_list[0].total if score_list else 0 
             
             # Get course info for latest round
 
-        if rounds[i].course_18_id:
-            course = Course18.query.get(rounds[i].course_18_id)
+        if round_data.course_18_id:
+            course = Course18.query.get(round_data.course_18_id)
             courses.append(course)
 
         else:
-            course = Course9.query.get(rounds[i].course_9_id)
+            course = Course9.query.get(round_data.course_9_id)
             courses.append(course)
 
             # Get player names for round, if there are any
 
-    for round_data in rounds:
+        
         names = []
         for player_id in [round_data.player_id_1, round_data.player_id_2, round_data.player_id_3]:
             if player_id:
@@ -102,12 +107,11 @@ def index():
 
         # Convert datetime to ex. "July 1, 2025"
 
-    for round_data in rounds:
         date_str = round_data.date
-        pretty_date = datetime.strptime(date_str, "%Y-%m-%d").strftime("%B %-d, %Y")
+        pretty_date = date_str.strftime("%B %-d, %Y")
         date.append(pretty_date)
 
-    combined = zip(rounds, scores, courses, players, date)
+        combined = zip([round_data], scores, courses, players, date)
 
     # DISPLAY STATS ON HOMEPAGE
 
@@ -166,23 +170,23 @@ def index():
         if holes == 18:
             total_18 += round_total
             rounds_18 += 1
-            total_front += score[0].front
-            total_back += score[0].back
+            total_front += score.front
+            total_back += score.back
             if best_18 == 0:
                 best_18 = round_total
             else:
                 if round_total < best_18:
                     best_18 = round_total
             if best_front == 0:
-                best_front = score[0].front
+                best_front = score.front
             else:
-                if score[0].front < best_front:
-                    best_front = score[0].front
+                if score.front < best_front:
+                    best_front = score.front
             if best_back == 0:
-                best_back = score[0].back
+                best_back = score.back
             else:
-                if score[0].back < best_back:
-                    best_back = score[0].back
+                if score.back < best_back:
+                    best_back = score.back
         else:
             total_9 += round_total
             rounds_9 += 1
@@ -192,10 +196,10 @@ def index():
                 if round_total < best_9:
                     best_9 = round_total
 
-    average_18 = round(total_18 / rounds_18) if rounds_played else None
-    average_9 = round(total_9 / rounds_9) if rounds_played else None
-    average_front = round(total_front / rounds_18) if rounds_played else None
-    average_back = round(total_back / rounds_18) if rounds_played else None
+    average_18 = round(total_18 / rounds_18) if rounds_18 else 0
+    average_9 = round(total_9 / rounds_9) if rounds_9 else 0
+    average_front = round(total_front / rounds_18) if rounds_18 else 0
+    average_back = round(total_back / rounds_18) if rounds_18 else 0
 
     # Calculate handicap index based on 8 best rounds from 20 most recent
 
@@ -249,8 +253,6 @@ def index():
 
 
     }
-
-    latest_score = scores[0][0]
 
     return render_template("index.html", name=name, combined=combined, stats=stats, latest_score=latest_score, recent_holes=recent_holes)
 
@@ -414,7 +416,7 @@ def new18():
         db.session.add(course)
         db.session.commit()
 
-        return redirect("/")
+        return redirect("/courses")
 
     else:
 
@@ -992,15 +994,18 @@ def players():
     rounds = Round.query.filter_by(user_id=session["user_id"]).all()
 
     for player in players:
-        birdies = pars = bogeys = eagles = double_bogeys = triple_bogeys = holes_in_one = total_score = 0
+        albatrosses = eagles = birdies = pars = bogeys = double_bogeys = triple_bogeys = holes_in_one = 0
+        total_18 = total_9 = total_front = total_back = best_18 = best_9 = best_front = best_back = 0
         rounds_played = 0
-        average_score = 0
+        rounds_18 = 0
+        rounds_9 = 0
+        player_id = player.player_id
+        
 
         for round_data in rounds:
             round_id = round_data.round_id
             holes = round_data.holes
-            player_id = player.player_id
-
+            
             # Get course — optional, depending on if you need course data for stats
             if round_data.course_18_id:
                 course = Course18.query.get(round_data.course_18_id)
@@ -1029,10 +1034,12 @@ def players():
 
                     round_total += s
 
-                    if s == p - 1:
-                        birdies += 1
+                    if s == p - 3:
+                        albatrosses += 1
                     elif s == p - 2:
                         eagles += 1
+                    elif s == p - 1:
+                        birdies += 1
                     elif s == p:
                         pars += 1
                     elif s == p + 1:
@@ -1041,17 +1048,63 @@ def players():
                         double_bogeys += 1
                     elif s == p + 3:
                         triple_bogeys += 1
-                    if s == 1:
+                    elif s == 1:
                         holes_in_one += 1
 
                 if holes == 18:
-                    total_score += round_total
+                    total_18 += round_total
+                    rounds_18 += 1
+                    total_front += score.front
+                    total_back += score.back
+                    if best_18 == 0:
+                        best_18 = round_total
+                    else:
+                        if round_total < best_18:
+                            best_18 = round_total
+                    if best_front == 0:
+                        best_front = score.front
+                    else:
+                        if score.front < best_front:
+                            best_front = score.front
+                    if best_back == 0:
+                        best_back = score.back
+                    else:
+                        if score.back < best_back:
+                            best_back = score.back
                 else:
-                    total_score += round_total * 2  # Multiply 9 hole total by 2 to approximate an 18 hole rounds
+                    total_9 += round_total
+                    rounds_9 += 1
+                    if best_9 == 0:
+                        best_9 = round_total
+                    else:
+                        if round_total < best_9:
+                            best_9 = round_total
 
-        # Calculate average score
+        # Calculate average scores
 
-        average_score = round(total_score / rounds_played) if rounds_played else None
+        average_18 = round(total_18 / rounds_18) if rounds_18 else 0
+        average_9 = round(total_9 / rounds_9) if rounds_9 else 0
+        average_front = round(total_front / rounds_18) if rounds_played else 0
+        average_back = round(total_back / rounds_18) if rounds_played else 0
+
+        # Assign default values if no stats were recorded
+
+        albatrosses = albatrosses or 0
+        eagles = eagles or 0
+        birdies = birdies or 0
+        pars = pars or 0
+        bogeys = bogeys or 0
+        double_bogeys = double_bogeys or 0
+        triple_bogeys = triple_bogeys or 0
+        holes_in_one = holes_in_one or 0
+        average_18 = average_18 or 0
+        average_9 = average_9 or 0
+        average_front = average_front or 0
+        average_back = average_back or 0
+        best_18 = best_18 or 0
+        best_9 = best_9 or 0
+        best_front = best_front or 0
+        best_back = best_back or 0
 
         # Calculate the player's handicap index based on best 8 rounds in most recent 20 rounds
         # Step 1: Get the 20 most recent rounds the player played in
@@ -1095,7 +1148,8 @@ def players():
 
         # Step 3: Update player with calculated stats
         player.rounds_played = rounds_played
-        player.average_score = average_score if rounds_played else 0
+        player.albatrosses = albatrosses
+        player.eagles = eagles
         player.birdies = birdies
         player.pars = pars
         player.bogeys = bogeys
@@ -1104,6 +1158,14 @@ def players():
         player.triple_bogeys = triple_bogeys
         player.holes_in_one = holes_in_one
         player.handicap = handicap_index
+        player.average_18 = average_18
+        player.average_9 = average_9
+        player.average_front = average_front
+        player.average_back = average_back
+        player.best_18 = best_18
+        player.best_9 = best_9
+        player.best_front = best_front
+        player.best_back = best_back
 
         db.session.commit()
 
@@ -1151,6 +1213,7 @@ def login():
 
     # User reached route via GET (as by clicking a link or via redirect)
     else:
+
         return render_template("login.html")
 
 
@@ -1208,7 +1271,7 @@ def register():
             return apology("Passwords do not match", 400)
 
         # Hash password
-        hash = generate_password_hash(password)
+        hash = generate_password_hash(password, method="pbkdf2:sha256")
 
         # Create new user instance
         user = User(username=new_username, hash=hash, nickname=nickname)
