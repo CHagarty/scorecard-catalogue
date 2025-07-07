@@ -1082,8 +1082,8 @@ def players():
 
         average_18 = round(total_18 / rounds_18) if rounds_18 else 0
         average_9 = round(total_9 / rounds_9) if rounds_9 else 0
-        average_front = round(total_front / rounds_18) if rounds_played else 0
-        average_back = round(total_back / rounds_18) if rounds_played else 0
+        average_front = round(total_front / rounds_18) if rounds_18 else 0
+        average_back = round(total_back / rounds_18) if rounds_18 else 0
 
         # Assign default values if no stats were recorded
 
