@@ -52,7 +52,6 @@ def index():
     user = User.query.get(session["user_id"])
     name = user.nickname
 
-
     # DISPLAY MOST RECENT ROUND
 
     round_data = Round.query.filter_by(user_id=session["user_id"]) \
@@ -66,6 +65,8 @@ def index():
     date = []
     recent_holes = round_data.holes if round_data else 0
     latest_score = 0
+    
+
 
     # Get scores for the latest round
 
@@ -73,13 +74,19 @@ def index():
 
         if round_data.holes == 18:
             score_list = Score18.query.filter_by(round_id=round_data.round_id).all()
-            scores.append(score_list)
-            latest_score = score_list[0].total if score_list else 0
+            if score_list:
+                scores.append(score_list)
+                latest_score = score_list[0].total 
+            else: 
+                latest_score = 0
             
         else:
             score_list = Score9.query.filter_by(round_id=round_data.round_id).all()
-            scores.append(score_list)
-            latest_score = score_list[0].total if score_list else 0 
+            if score_list:
+                scores.append(score_list)
+                latest_score = score_list[0].total 
+            else: 
+                latest_score = 0    
             
             # Get course info for latest round
 
@@ -108,6 +115,8 @@ def index():
         date_str = round_data.date
         pretty_date = date_str.strftime("%B %-d, %Y")
         date.append(pretty_date)
+
+        print(scores)
 
         combined = zip([round_data], scores, courses, players, date)
 
@@ -252,6 +261,8 @@ def index():
 
     }
 
+
+
     return render_template("index.html", name=name, combined=combined, stats=stats, latest_score=latest_score, recent_holes=recent_holes)
 
 
@@ -335,6 +346,8 @@ def new9():
         return redirect("/")
 
     else:
+
+
 
         return render_template("new9.html")
 
@@ -952,7 +965,9 @@ def add_players():
 
         players += 1
 
-        return render_template("add_players.html", players=players)
+        user_id = session["user_id"]
+
+        return render_template("add_players.html", players=players, user_id=user_id)
 
 
 # SELECT THE NUMBER OF PLAYERS
