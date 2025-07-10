@@ -1,6 +1,10 @@
 # Scorecard Catalogue
 #### Video Demo:  <URL https://youtu.be/iebnCEmV5l8?si=LsjTMclVCX5dT88P>
+#### Link to site: <URL https://www.scorecardcatalogue.com/login>
 #### Description:
+
+
+
 Scorecard Catalogue is my final project for CS50*. It is a flask based web application.
 
 The purpose of Scorecard Catalogue is to function as a digital collection of golf scorecards. Additionally, it automatically calculates and stores stats as rounds are completed. The goal is to let the user move away from physical, disposable golf scorecards, allowing them to enter their scores and their playing partners scores as the round progresses as you would do with a traditional scorecard. Once the round is complete, they must simply click “add round” and a scorecard of their round is created.
