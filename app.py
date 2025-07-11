@@ -360,6 +360,10 @@ def new18():
 
     if request.method == "POST":
 
+        user_id = int(session["user_id"])
+        if user_id == 2:
+            return redirect("/courses")
+
         # Ensure that all of the inputs were filled out
         if not request.form.get("course"):
             return apology("Must fill out course", 400)
@@ -430,8 +434,9 @@ def new18():
         return redirect("/courses")
 
     else:
+        user_id = int(session["user_id"])
 
-        return render_template("new18.html")
+        return render_template("new18.html", user_id=user_id)
 
 
 # ----------------------------------------------------------------------------------------------------------------------------
@@ -445,7 +450,12 @@ def new18():
 @login_required
 def add_round():
 
+   
+
     if request.method == "POST":
+        user_id_int = int(session["user_id"])
+        if user_id_int == 2:
+            return redirect("/my_rounds")
 
         # Ensure course was selected
         if not request.form.get("course"):
@@ -772,6 +782,8 @@ def add_round():
                     player_names.append(player.first_name)
                 else:
                     return apology("Player not found", 400)
+                
+        user_id = int(session["user_id"])
 
         # Render template
         return render_template(
@@ -781,7 +793,8 @@ def add_round():
             players=players,
             holes=holes,
             course_18=course_18,
-            course_9=course_9
+            course_9=course_9,
+            user_id=user_id
         )
 
 
@@ -930,6 +943,10 @@ def new_round_players():
 def add_players():
 
     if request.method == "POST":
+        
+        user_id = int(session["user_id"])
+        if user_id == 2:
+            return redirect("/players")
 
         # Get number of players to be added
         players = int(request.form.get("num_players"))
@@ -965,7 +982,7 @@ def add_players():
 
         players += 1
 
-        user_id = session["user_id"]
+        user_id = int(session["user_id"])
 
         return render_template("add_players.html", players=players, user_id=user_id)
 

@@ -28,12 +28,13 @@
     <!-- Swap singular, plural button text depending on number of players being added-->
 
         {% if user_id == 2 %}
-            {% if players == 1 %}
-                <button class="btn btn-primary">Add player*</button>
+            {% if players == 2 %}
+                <button class="btn btn-primary" type="button">Add player*</button>
                 <p>*Unable to submit using the demo profile</p>
-            {% elif players == 2 %}
-                <button class="btn btn-primary">Add players*</button>
+            {% elif players > 2 %}
+                <button class="btn btn-primary" type="button">Add players*</button>
                 <p>*Unable to submit using the demo profile</p>
+            {% endif %} 
         {% else %}
             {% if players == 2 %}
                 <button class="btn btn-primary" type="submit">Add player</button>
